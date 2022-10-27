@@ -33,14 +33,6 @@ int list_ctor_ (List *lst,             int capacity_ctor, const char* lst_name,
     lst->next[0] = 0;
     lst->prev[0] = 0;
 
-    lst->buffer[1] = 10;
-    lst->next[1] = 2;
-    lst->prev[1] = 0;
-
-    lst->buffer[2] = 13;
-    lst->next[2] = 0;
-    lst->prev[2] = 1;
-
     //verificate_list (lst);
 
     return 0;

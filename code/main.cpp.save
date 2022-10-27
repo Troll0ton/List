@@ -8,14 +8,19 @@ int main ()
 
     list_ctor (&lst1, 15);
 
-    debug_list (&lst1);
+    for(int i = 1000; i < 1200; i++)
+    {
+        stack_push (&lst1, i);
+    }
 
-    list_push (&lst1, 300, 2);
-    list_push (&lst1, 301, 3);
-    list_push (&lst1, 302, 4);
-    list_push (&lst1, 303, 5);
+    for(int i = 0; i < 20; i++)
+    {
+        stack_pop (&lst1);
+    }
 
-    list_dtor (&lst1);
+    debug_stack (&lst1);
+
+    stack_dtor (&lst1);
 
     return 0;
 }
