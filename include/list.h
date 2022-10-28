@@ -63,28 +63,36 @@ const struct Error_info error_arr_l[]
 
 typedef struct List
 {
-    ListInfo  List_info;
-    double   *buffer;
-    int      *next;
-    int      *prev;
-    int       capacity;
-    int       size;
+    ListInfo List_info;
+
+    double  *buffer;
+    int     *next;
+    int     *prev;
+    int      head;
+    int      tail;
+    int      free;
+    int      capacity;
+    int      size;
 } List;
 
 //-----------------------------------------------------------------------------
 
-void list_push   (List *lst, double elem, int pos);
+void list_push_in   (List *lst, double elem, int pos);
 
-int  list_resize (List *lst, int opt_resize);
+void list_push_head (List *lst, double elem);
 
-void list_dtor   (List *lst);
+void list_resize    (List *lst, int opt_resize);
 
-int  list_ctor_  (List *lst,             int capacity_ctor, const char* lst_name,
-                  const char* file_name, int lst_line                            );
+void list_dtor      (List *lst);
 
-void debug_list  (List *lst);
+int  list_ctor_     (List *lst,             int capacity_ctor, const char* lst_name,
+                     const char* file_name, int lst_line                            );
 
-void *recalloc   (void *buffer, int capacity, int size);
+void debug_list     (List *lst);
+
+void *recalloc      (void *buffer, int capacity, int size);
+
+void list_pop       (List *lst, int pos);
 
 //-----------------------------------------------------------------------------
 

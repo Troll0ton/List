@@ -6,7 +6,7 @@ int list_ctor_ (List *lst,             int capacity_ctor, const char* lst_name,
                 const char* file_name, int lst_line                            )
 {
     lst->capacity = capacity_ctor + 1;
-    lst->size = 3;
+    lst->size = 1;
 
     lst->List_info.name = lst_name;
     lst->List_info.file = file_name;
@@ -14,6 +14,9 @@ int list_ctor_ (List *lst,             int capacity_ctor, const char* lst_name,
     lst->List_info.line = lst_line;
     lst->List_info.error_codes = 0;
     lst->List_info.cur_status = "OK";
+
+    lst->head = 0;
+    lst->tail = 0;
 
     if (capacity_ctor >= 0)
     {
@@ -29,11 +32,23 @@ int list_ctor_ (List *lst,             int capacity_ctor, const char* lst_name,
         return ERR_CAP;
     }
 
-    lst->buffer[0] = 0;
-    lst->next[0] = 0;
-    lst->prev[0] = 0;
-
-    //verificate_list (lst);
+    
+    for(int i = 1; i < lst->size; i++)
+    {
+        if(i != 1) 
+        {
+            lst->prev[i - 1];
+        }
+        
+        if(i != lst->size - 1)
+        {
+            lst->next[i + 1];
+        }
+        
+        lst->buffer[i] = NAN;
+    }
+    
+    lst->free = 1;
 
     return 0;
 }
@@ -42,8 +57,6 @@ int list_ctor_ (List *lst,             int capacity_ctor, const char* lst_name,
 
 void list_dtor (List *lst)
 {
-    //verificate_list (lst);
-
     free (lst->buffer);
     free (lst->next);
     free (lst->prev);
@@ -53,7 +66,7 @@ void list_dtor (List *lst)
 
 //-----------------------------------------------------------------------------
 
-int list_resize (List *lst, int opt_resize)
+void list_resize (List *lst, int opt_resize)
 {
     if(opt_resize == lst_increase)
     {
@@ -82,34 +95,113 @@ int list_resize (List *lst, int opt_resize)
 
 //-----------------------------------------------------------------------------
 
-void list_push (List *lst, double elem, int pos)
+void list_push_head (List *lst, double elem)
 {
-    //verificate_stack (lst);
+    if()
+    lst->size++;
+
+    if(lst->size > lst->capacity)
+    {
+        list_resize (lst, lst_increase);
+    }
+
+    lst->prev[lst->size - 1]   = 0;
+    lst->next[lst->size - 1]   = 0;
+    lst->buffer[lst->size - 1] = elem;
+
+    if(lst->tail == 0)
+    {
+        lst->tail = lst->size - 1;
+    }
+
+    else
+    {
+        int secnd_hd = lst->head;
+        lst->prev[secnd_hd] = lst->size - 1;
+        lst->next[lst->size - 1] = secnd_hd;
+    }
+
+    lst->head = lst->size - 1;
+
+    debug_list (lst);
+}
+
+//-----------------------------------------------------------------------------
+
+void list_push_in (List *lst, double elem, int pos)
+{
+    lst->size++;
 
     if(lst->size + 1 > lst->capacity)
     {
         list_resize (lst, lst_increase);
     }
 
-    lst->buffer[lst->size] = elem;
+    lst->buffer[lst->size - 1] = elem;
 
-    int nt_pos = lst->next[pos - 1];
-    lst->next[pos - 1] = lst->size;
-    lst->next[lst->size] = nt_pos;
+    lst->prev[lst->size - 1] = pos;
+    int next_elem = lst->next[pos];
+    lst->next[pos] = lst->size - 1;
+    lst->next[lst->size - 1] = next_elem;
 
-    lst->prev[lst->size] = lst->prev[pos];
-    lst->prev[pos] = lst->size;
+    if(pos == lst->tail)
+    {
+        lst->tail = lst->size - 1;
+    }
+
+    else
+    {
+        lst->prev[next_elem] = lst->size - 1;
+    }
+
+    debug_list (lst);
+}
+
+//-----------------------------------------------------------------------------
+
+void list_pop (List *lst, int pos)
+{
+    if(pos == lst->head)
+    {
+        lst->prev[lst->next[lst->head]] = 0;
+        int new_head = lst->next[lst->head];
+        lst->next[lst->head] = 0;
+        lst->head = new_head;
+    }
+
+    else if(pos == lst->tail)
+    {
+        lst->next[lst->prev[lst->tail]] = 0;
+        int new_tail = lst->prev[lst->tail];
+        lst->prev[lst->tail] = 0;
+        lst-> tail = new_tail;
+    }
+
+    else
+    {
+        lst->next[lst->prev[pos]] = lst->next[pos];
+        lst->prev[lst->next[pos]] = lst->prev[pos];
+    }
+
+    lst->next[pos] = 0;
+    lst->prev[pos] = 0;
+    lst->buffer[pos] = -1;
 
     debug_list (lst);
 
-    lst->size++;
+    lst->size--;
 }
 
 //-----------------------------------------------------------------------------
 
 void debug_list (List *lst)
 {
-    printf ("___________________________________________________________\n\n");
+    printf ("_________________________LIST__________________________________\n\n");
+
+    printf ("%d - HEAD\n", lst->head);
+    printf ("%d - TAIL\n", lst->tail);
+
+    printf ("_______________________________________________________________\n\n");
 
     for (int i = 0; i < lst->size; i++)
     {
@@ -130,7 +222,7 @@ void debug_list (List *lst)
         printf ("%d ", lst->prev[i]);
     }
 
-    printf ("\n___________________________________________________________\n\n");
+    printf ("\n_______________________________________________________________\n\n");
 }
 
 //-----------------------------------------------------------------------------
