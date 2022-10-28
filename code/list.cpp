@@ -1,160 +1,272 @@
-#include "../include/list.h"
+//-----------------------------------------------------------------------------
+
+struct node *head = NULL;
+struct node *last = NULL;
+struct node *current = NULL;
 
 //-----------------------------------------------------------------------------
 
-int list_ctor_ (List *lst,             int capacity_ctor, const char* lst_name,
-                const char* file_name, int lst_line                            )
+bool isEmpty()
 {
-    lst->capacity = capacity_ctor + 1;
-    lst->size = 3;
-
-    lst->List_info.name = lst_name;
-    lst->List_info.file = file_name;
-    lst->List_info.dbg_file = fopen ("../dump/list_dump.txt", "w+");
-    lst->List_info.line = lst_line;
-    lst->List_info.error_codes = 0;
-    lst->List_info.cur_status = "OK";
-
-    if (capacity_ctor >= 0)
-    {
-        lst->buffer = (double*) calloc (1, (capacity_ctor + 1) * sizeof (double));
-        lst->next   = (int*)    calloc (1, (capacity_ctor + 1) * sizeof (int));
-        lst->prev   = (int*)    calloc (1, (capacity_ctor + 1) * sizeof (int));
-    }
-
-    else
-    {
-        lst->List_info.error_codes |= ERR_CAP;
-
-        return ERR_CAP;
-    }
-
-    lst->buffer[0] = 0;
-    lst->next[0] = 0;
-    lst->prev[0] = 0;
-
-    lst->buffer[1] = 10;
-    lst->next[1] = 2;
-    lst->prev[1] = 0;
-
-    lst->buffer[2] = 13;
-    lst->next[2] = 0;
-    lst->prev[2] = 1;
-
-    //verificate_list (lst);
-
-    return 0;
+   return head == NULL;
 }
 
 //-----------------------------------------------------------------------------
 
-void list_dtor (List *lst)
+int find_size()
 {
-    //verificate_list (lst);
+   int size = 0;
+   struct node *current;
 
-    free (lst->buffer);
-    free (lst->next);
-    free (lst->prev);
+   for(current = head; current != NULL; current = current->next)
+   {
+      size++;
+   }
 
-    fclose (lst->List_info.dbg_file);
+   return size;
 }
 
 //-----------------------------------------------------------------------------
 
-int list_resize (List *lst, int opt_resize)
-{
-    if(opt_resize == lst_increase)
-    {
-        if(lst->capacity == 0)
-        {
-            lst->capacity = 2;
-        }
+//показать список с первого элемента по последний
+void displayForward() {
 
-        lst->capacity *= 2;
-    }
+   //начать с начала списка
+   struct node *ptr = head;
 
-    else if(opt_resize == lst_decrease)
-    {
-        lst->capacity /= 2;
-    }
+   //выводить пока не конец списка
+   printf("\n[ ");
 
-    else
-    {
-        lst->List_info.error_codes |= ERR_RESIZE;
-    }
+   while(ptr != NULL) {
+      printf("(%d,%d) ",ptr->key,ptr->data);
+      ptr = ptr->next;
+   }
 
-    lst->buffer = (double*) recalloc (lst->buffer, lst->capacity, lst->size);
-    lst->next   = (int*)    recalloc (lst->buffer, lst->capacity, lst->size);
-    lst->prev   = (int*)    recalloc (lst->buffer, lst->capacity, lst->size);
+   printf(" ]");
+}
+
+//показать список с последнего по первый элемент
+void displayBackward() {
+
+   //начать с конца списка
+   struct node *ptr = last;
+
+   //выводить пока не начало списка
+   printf("\n[ ");
+
+   while(ptr != NULL) {
+
+      //вывести данные
+      printf("(%d,%d) ",ptr->key,ptr->data);
+
+      //перейти к следующему элементу
+      ptr = ptr ->prev;
+
+   }
+
+}
+
+//вставить элемент в начало списка
+void insertFirst(int key, int data) {
+
+   //создать элемент
+   struct node *link = (struct node*) malloc(sizeof(struct node));
+   link->key = key;
+   link->data = data;
+
+   if(isEmpty()) {
+      //поставить элемент в конец
+      last = link;
+   } else {
+      //update first prev link обновить у первого элемента ссылку на предыдущий элемент
+      head->prev = link;
+   }
+
+   //установить указатель на прошлый первый элемент
+   link->next = head;
+
+   //point first to new first link установить указатель списка первого элемента на новый первый элемент
+   head = link;
+}
+
+//добавить элемент в конец списка
+void insertLast(int key, int data) {
+
+   //создать указатель на элемент
+   struct node *link = (struct node*) malloc(sizeof(struct node));
+   link->key = key;
+   link->data = data;
+
+   if(isEmpty()) {
+      //сделать последним элементом
+      last = link;
+   } else {
+      //сделать элемент новым последним элементом
+      last->next = link;
+
+      //установить указатель с нового элемента на прошлый последний элемент
+      link->prev = last;
+   }
+
+   //сделать элемент последним в списке
+   last = link;
+}
+
+//удалить первый элемент
+struct node* deleteFirst() {
+
+   //сохранить ссылку на первый элемент
+   struct node *tempLink = head;
+
+   //если один элемент
+   if(head->next == NULL){
+      last = NULL;
+   } else {
+      head->next->prev = NULL;
+   }
+
+   head = head->next;
+   //return the deleted link возвратить удаленный элемент
+   return tempLink;
+}
+
+//удалить последний элемент
+
+struct node* deleteLast() {
+   //сохранить ссылку на последний элемент
+   struct node *tempLink = last;
+
+   //если один элемент
+   if(head->next == NULL) {
+      head = NULL;
+   } else {
+      last->prev->next = NULL;
+   }
+
+   last = last->prev;
+
+   //возвратить удаленный элемент
+   return tempLink;
+}
+
+//удалить элемент с заданным ключом
+struct node* delete(int key) {
+
+   //начать с первого элемента
+   struct node* current = head;
+   struct node* previous = NULL;
+
+   //если список пуст
+   if(head == NULL) {
+      return NULL;
+   }
+
+   //продвигаться по списку
+   while(current->key != key) {
+      //если элемент последний
+
+      if(current->next == NULL) {
+         return NULL;
+      } else {
+         //сохранить указатель на текущий элемент
+         previous = current;
+
+         //перейти к следующему элементу
+         current = current->next;
+      }
+   }
+
+   //если найдено совпадение, обновить ссылку
+   if(current == head) {
+      //изменить указатель на первый элемент
+      head = head->next;
+   } else {
+      //установить у прошлого элемента ссылку на следующий от текущего
+      current->prev->next = current->next;
+   }
+
+   if(current == last) {
+      //изменить указатель на последний элемент
+      last = current->prev;
+   } else {
+      current->next->prev = current->prev;
+   }
+
+   return current;
+}
+
+bool insertAfter(int key, int newKey, int data) {
+   //начать с первого элемента
+   struct node *current = head;
+
+   //если лист пуст
+   if(head == NULL) {
+      return false;
+   }
+
+   //продвигаться по списку
+   while(current->key != key) {
+
+      //если это последний элемент
+      if(current->next == NULL) {
+         return false;
+      } else {
+         //перейти к следующему
+         current = current->next;
+      }
+   }
+
+   //создать указатель на новый элемент
+   struct node *newLink = (struct node*) malloc(sizeof(struct node));
+   newLink->key = newKey;
+   newLink->data = data;
+
+   if(current == last) {
+      newLink->next = NULL;
+      last = newLink;
+   } else {
+      newLink->next = current->next;
+      current->next->prev = newLink;
+   }
+
+   newLink->prev = current;
+   current->next = newLink;
+   return true;
+}
+
+void main() {
+   insertFirst(1,10);
+   insertFirst(2,20);
+   insertFirst(3,30);
+   insertFirst(4,1);
+   insertFirst(5,40);
+   insertFirst(6,56);
+
+   printf("\nList (First to Last): ");
+   displayForward();
+
+   printf("\n");
+   printf("\nList (Last to first): ");
+   displayBackward();
+
+   printf("\nList , after deleting first record: ");
+   deleteFirst();
+   displayForward();
+
+   printf("\nList , after deleting last record: ");
+   deleteLast();
+   displayForward();
+
+   printf("\nList , insert after key(4) : ");
+   insertAfter(4,7, 13);
+   displayForward();
+
+   printf("\nList  , after delete key(4) : ");
+   delete(4);
+   displayForward();
 }
 
 //-----------------------------------------------------------------------------
 
-void list_push (List *lst, double elem, int pos)
-{
-    //verificate_stack (lst);
-
-    if(lst->size + 1 > lst->capacity)
-    {
-        list_resize (lst, lst_increase);
-    }
-
-    lst->buffer[lst->size] = elem;
-
-    int nt_pos = lst->next[pos - 1];
-    lst->next[pos - 1] = lst->size;
-    lst->next[lst->size] = nt_pos;
-
-    lst->prev[lst->size] = lst->prev[pos];
-    lst->prev[pos] = lst->size;
-
-    debug_list (lst);
-
-    lst->size++;
-}
-
-//-----------------------------------------------------------------------------
-
-void debug_list (List *lst)
-{
-    printf ("___________________________________________________________\n\n");
-
-    for (int i = 0; i < lst->size; i++)
-    {
-        printf ("%lg ", lst->buffer[i]);
-    }
-
-    printf ("\n");
-
-    for (int i = 0; i < lst->size; i++)
-    {
-        printf ("%d ", lst->next[i]);
-    }
-
-    printf ("\n");
-
-    for (int i = 0; i < lst->size; i++)
-    {
-        printf ("%d ", lst->prev[i]);
-    }
-
-    printf ("\n___________________________________________________________\n\n");
-}
-
-//-----------------------------------------------------------------------------
-
-void *recalloc (void *buffer, int capacity, int size)
-{
-    char *pointer = (char*) realloc ((char*) buffer, capacity * sizeof (double));
-
-    if(capacity > size)
-    {
-        memset (pointer + size * sizeof (double), '\0', (capacity - size) * sizeof (double));
-    }
-
-    return (void*) pointer;
-}
-
-//-----------------------------------------------------------------------------
 
 

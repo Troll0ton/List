@@ -33,6 +33,17 @@ enum ERROR_CODES_L
 
 //-----------------------------------------------------------------------------
 
+struct Node
+{
+   int key;
+   double data;
+
+   struct Node *next;
+   struct Node *prev;
+};
+
+//-----------------------------------------------------------------------------
+
 typedef struct ListInfo
 {
     const char *name;
@@ -42,6 +53,18 @@ typedef struct ListInfo
     int32_t     error_codes;
     char       *cur_status;
 } ListInfo;
+
+//-----------------------------------------------------------------------------
+
+typedef struct List
+{
+    ListInfo  List_info;
+    Node     *head;
+    Node     *buffer;
+    Node     *tail;
+    int       capacity;
+    int       size;
+} List;
 
 //-----------------------------------------------------------------------------
 
@@ -58,18 +81,6 @@ const struct Error_info error_arr_l[]
     {ERR_CAP,    "ERROR - incorrect capacity value (below zero)                      \n"},
     {ERR_RESIZE, "ERROR - incorrect resize parameter                                 \n"},
 };
-
-//-----------------------------------------------------------------------------
-
-typedef struct List
-{
-    ListInfo  List_info;
-    double   *buffer;
-    int      *next;
-    int      *prev;
-    int       capacity;
-    int       size;
-} List;
 
 //-----------------------------------------------------------------------------
 
