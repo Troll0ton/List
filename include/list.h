@@ -15,39 +15,42 @@
 
 //-----------------------------------------------------------------------------
 
-#define list_ctor(lst, capacity) list_ctor_ (lst, capacity, #lst, __FILE__,  __LINE__)
-//#define list_dump(lst)           stack_dump_ (lst,                 __FILE__,  __LINE__)
+#define list_ctor(Lst, capacity) list_ctor_ (Lst, capacity, #Lst, __FILE__,  __LINE__)
 
 //-----------------------------------------------------------------------------
 
-#define lst_increase 1
-#define lst_decrease 0
-
-//-----------------------------------------------------------------------------
-
-enum ERROR_CODES_L
+enum Pars
 {
-    ERR_CAP     = (1 << 1),
-    ERR_RESIZE  = (1 << 2),
+    LST_INCREASE 1
+    LST_DECREASE 0
 };
 
 //-----------------------------------------------------------------------------
 
-typedef struct ListInfo
+enum ERROR_LCODES
+{
+    ERR_CAP     = (1 << 1),
+    ERR_DATA    = (1 << 2),
+    ERR_RESIZE  = (1 << 3),
+};
+
+//-----------------------------------------------------------------------------
+
+typedef struct List_info
 {
     const char *name;
     const char *file;
     FILE       *dbg_file;
     int         line;
-    int32_t     error_codes;
+    int         error_codes;
     char       *cur_status;
-} ListInfo;
+} List_info;
 
 //-----------------------------------------------------------------------------
 
 typedef struct Error_info
 {
-    int32_t error_code;
+    int     error_code;
     char   *error_output;
 } Error_info;
 
@@ -56,6 +59,7 @@ typedef struct Error_info
 const struct Error_info error_arr_l[]
 {
     {ERR_CAP,    "ERROR - incorrect capacity value (below zero)                      \n"},
+    {ERR_DATA,   "ERROR - wrong calloc working                                       \n"},
     {ERR_RESIZE, "ERROR - incorrect resize parameter                                 \n"},
 };
 
@@ -63,36 +67,35 @@ const struct Error_info error_arr_l[]
 
 typedef struct List
 {
-    ListInfo List_info;
-
-    double  *buffer;
-    int     *next;
-    int     *prev;
-    int      head;
-    int      tail;
-    int      free;
-    int      capacity;
-    int      size;
+    List_info Info;
+    double   *buffer;
+    int      *next;
+    int      *prev;
+    int       head;
+    int       tail;
+    int       free;
+    int       capacity;
+    int       size;
 } List;
 
 //-----------------------------------------------------------------------------
 
-void list_push_in   (List *lst, double elem, int pos);
+void list_push_in   (List *Lst, double elem, int pos);
 
-void list_push_head (List *lst, double elem);
+void list_push_head (List *Lst, double elem);
 
-void list_resize    (List *lst, int opt_resize);
+void list_resize    (List *Lst, int opt_resize);
 
-void list_dtor      (List *lst);
+void list_dtor      (List *Lst);
 
-int  list_ctor_     (List *lst,             int capacity_ctor, const char* lst_name,
+int  list_ctor_     (List *Lst,             int capacity_ctor, const char* lst_name,
                      const char* file_name, int lst_line                            );
 
-void debug_list     (List *lst);
+void debug_list     (List *Lst);
 
 void *recalloc      (void *buffer, int capacity, int size);
 
-void list_pop       (List *lst, int pos);
+void list_pop       (List *Lst, int pos);
 
 //-----------------------------------------------------------------------------
 

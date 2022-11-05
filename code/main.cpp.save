@@ -4,20 +4,20 @@
 
 int main ()
 {
-    List lst1;
+    List Lst1 = { 0 };
 
-    list_ctor (&lst1, 15);
+    list_ctor (&Lst1, 15);
 
 /*
-    list_push_head (&lst1, 300);
-    list_push_in (&lst1, 301, 1);
-    list_push_in (&lst1, 302, 2);
-    list_push_in (&lst1, 303, 3);
-    list_push_in (&lst1, 999, 2);
+    list_push_head (&Lst1, 300);
+    list_push_in (&Lst1, 301, 1);
+    list_push_in (&Lst1, 302, 2);
+    list_push_in (&Lst1, 303, 3);
+    list_push_in (&Lst1, 999, 2);
 
-    list_pop (&lst1, 5);
+    list_pop (&Lst1, 5);
 
-    list_dtor (&lst1);  */
+    list_dtor (&Lst1);  */
 
     return 0;
 }
