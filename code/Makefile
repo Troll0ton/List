@@ -1,13 +1,14 @@
-all: mlist
+CC=g++
+CFLAGS=-c -Wall
+LDFLAGS=
+SOURCES=main.cpp list.cpp
+OBJECTS=$(SOURCES:.cpp=.o)
+EXECUTABLE=rlist
 
-mlist: main.o list.o 
-	g++ main.o list.o 
+all: $(SOURCES) $(EXECUTABLE)
+	
+$(EXECUTABLE): $(OBJECTS) 
+	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
 
-main.o: main.cpp
-	g++ -c main.cpp
-
-list.o: list.cpp
-	g++ -c list.cpp
-
-clean:
-	rm -rf *.o
+.cpp.o:
+	$(CC) $(CFLAGS) $< -o $@

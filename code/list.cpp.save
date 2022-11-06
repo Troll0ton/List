@@ -2,8 +2,8 @@
 
 //-----------------------------------------------------------------------------
 
-int list_ctor_ (List       *Lst,       int capacity_ctor, const char* lst_name,
-                const char* file_name, int lst_line                            )
+void list_ctor_ (List       *Lst,       int capacity_ctor, const char* lst_name,
+                 const char* file_name, int lst_line                            )
 {
     Lst->capacity = capacity_ctor + 1;
     Lst->size = 1;
@@ -12,53 +12,40 @@ int list_ctor_ (List       *Lst,       int capacity_ctor, const char* lst_name,
 
     if (capacity_ctor >= 0)
     {
-        Lst->buffer = (double*) calloc (1, (capacity_ctor + 1) * sizeof (double));
-        Lst->next   = (int*)    calloc (1, (capacity_ctor + 1) * sizeof (int));
-        Lst->prev   = (int*)    calloc (1, (capacity_ctor + 1) * sizeof (int));
+        Lst->Data = (Node*) calloc (capacity_ctor + 1, sizeof (Node));
 
-        if(Lst->buffer == NULL || Lst->next == NULL || Lst->prev == NULL)
+        if(Lst->Data == NULL)
         {
-            Lst->Info.error_codes |= ERR_DATA;
-
-            return ERR_DATA;
+            printf ("ERROR - Data\n");
         }
     }
 
     else
     {
-        Lst->Info.error_codes |= ERR_CAP;
-
-        return ERR_CAP;
+        printf ("ERROR - CAP\n");
     }
 
+    free_space_ctor (Lst);
 
-    for(int i = 1; i < Lst->capacity; i++)
-    {
-        if(i != 1) Lst->prev[i - 1];
-
-        if(i != Lst->capacity - 1) Lst->next[i + 1];
-    }
-
-    Lst->free = 1;
-
-    return list_info_ctor (Lst, capacity_ctor, lst_name, file_name, lst_line);
+    list_info_ctor (Lst, capacity_ctor, lst_name, file_name, lst_line);
 }
 
 //-----------------------------------------------------------------------------
 
-int list_info_ctor (List       *Lst        int capacity_ctor, const char* lst_name,
-                    const char* file_name, int lst_line                            )
+void list_info_ctor (List       *Lst        int capacity_ctor, const char* lst_name,
+                     const char* file_name, int lst_line                            )
 {
-    Lst->Info.name        = lst_name;
-    Lst->Info.file        = file_name;
+    Lst->Info.name = lst_name;
+    Lst->Info.file = file_name;
+    Lst->Info.line = lst_line;
+
     Lst->Info.dbg_file    = fopen ("../dump/list_dump.txt", "w+");
-    Lst->Info.line        = lst_line;
     Lst->Info.error_codes = 0;
     Lst->Info.cur_status  = "OK";
 
     if(Lst->Info.dbg_file == NULL)
     {
-        return ERROR_LINFO_CTOR;
+        printf ("ERROR - FILE\n");
     }
 
     return 0;
@@ -66,13 +53,44 @@ int list_info_ctor (List       *Lst        int capacity_ctor, const char* lst_na
 
 //-----------------------------------------------------------------------------
 
+void free_space_ctor (List *Lst)
+{
+    int prev_free = 0;
+
+    for(int curr_pos = 1; curr_pos < Lst->capacity; curr_pos++)
+    {
+        if(Lst->Data[curr_pos].value == NANV)
+        {
+            Lst->Data[curr_pos].next  = 0;
+            Lst->Data[prev_free].next = curr_pos;
+            prev_free                 = curr_pos;
+        }
+    }
+
+    Lst->free = Lst->Data[0].next;
+}
+
+//-----------------------------------------------------------------------------
+
 void list_dtor (List *Lst)
 {
-    free (Lst->buffer);
-    free (Lst->next);
-    free (Lst->prev);
+    Lst->size = DELETED_PAR;
+    Lst->head = DELETED_PAR;
+    Lst->tail = DELETED_PAR;
 
+    free (Lst->Data);
+
+    list_info_dtor (Lst);
+}
+
+//-----------------------------------------------------------------------------
+
+void list_info_dtor (List *Lst)
+{
     fclose (Lst->Info.dbg_file);
+
+    Lst->Info.error_codes = DELETED_PAR;
+    Lst->Info.cur_status  = "DELETED";
 }
 
 //-----------------------------------------------------------------------------
@@ -99,122 +117,134 @@ void list_resize (List *Lst, int opt_resize)
         Lst->Info.error_codes |= ERR_RESIZE;
     }
 
-    Lst->buffer = (double*) recalloc (Lst->buffer, Lst->capacity, Lst->size, sizeof (double));
-    Lst->next   = (int*)    recalloc (Lst->next,   Lst->capacity, Lst->size, sizeof (int));
-    Lst->prev   = (int*)    recalloc (Lst->prev,   Lst->capacity, Lst->size, sizeof (int));
+    Lst->Data = (Node*) recalloc (Lst->Data, Lst->capacity, Lst->size, sizeof (Node));
+
+    free_space_ctor (Lst);
 }
 
 //-----------------------------------------------------------------------------
 
-void list_push_head (List *Lst, double elem)
+int init_node (List *Lst)
 {
-    if(next[free] == 0)
+    if(Lst->free == 0 || ++(Lst->size) > Lst->capacity)
     {
         list_resize (Lst, LST_INCREASE);
     }
 
-    Lst->size++;
+    int curr_pos = Lst->free;
 
-    if(Lst->size > Lst->capacity)
-    {
-        list_resize (Lst, LST_INCREASE);
-    }
+    Lst->free = Lst->Data[Lst->free].next;
 
-    Lst->prev[free]   = 0;
-    Lst->next[free]   = 0;
-    Lst->buffer[free] = elem;
+    Lst->Data[curr_pos].value = 0;
+    Lst->Data[curr_pos].next  = 0;
+    Lst->Data[curr_pos].prev  = 0;
+
+    return curr_pos;
+}
+
+//-----------------------------------------------------------------------------
+
+void list_push_head (List *Lst, double value)
+{
+    int curr_pos = init_node (Lst);
+
+    Lst->Data[curr_pos].value = value;
 
     if(Lst->tail == 0)
     {
-        Lst->tail = free;
+        Lst->tail = curr_pos;
     }
 
     else
     {
-        int secnd_hd = Lst->head;
-        Lst->prev[secnd_hd] = free;
-        Lst->next[free] = secnd_hd;
+        Lst->Data[Lst->head].prev = curr_pos;
+        Lst->Data[curr_pos].next  = Lst->head;
     }
 
-    Lst->head = free;
-
-    debug_list (Lst);
+    Lst->head = curr_pos;
 }
 
 //-----------------------------------------------------------------------------
 
-void list_push_in (List *Lst, double elem, int pos)
+void list_push_tail (List *Lst, double value)
 {
-    Lst->size++;
+    int curr_pos = init_node (Lst);
 
-    if(Lst->size + 1 > Lst->capacity)
+    Lst->Data[curr_pos].value = value;
+
+    if(Lst->head == 0)
     {
-        list_resize (Lst, LST_INCREASE);
-    }
-
-    Lst->buffer[Lst->size - 1] = elem;
-
-    Lst->prev[Lst->size - 1] = pos;
-    int next_elem = Lst->next[pos];
-    Lst->next[pos] = Lst->size - 1;
-    Lst->next[Lst->size - 1] = next_elem;
-
-    if(pos == Lst->tail)
-    {
-        Lst->tail = Lst->size - 1;
+        Lst->head = curr_pos;
     }
 
     else
     {
-        Lst->prev[next_elem] = Lst->size - 1;
+        Lst->Data[Lst->tail].next = curr_pos;
+        Lst->Data[curr_pos].prev  = Lst->tail;
     }
 
-    debug_list (Lst);
+    Lst->tail = curr_pos;
 }
 
 //-----------------------------------------------------------------------------
 
-void list_pop (List *Lst, int pos)
+void list_push_right (List *Lst, double value, int insert_pos)
 {
-    if(Lst->buffer[pos] == -1) 
+    if(insert_pos == Lst->tail)
     {
-        return ERROR_POP;
+        list_push_tail (Lst, value);
     }
-    
-    else if(Lst->head == Lst->tail)
+
+    else
+    {
+        int curr_pos = init_node (Lst);
+
+        Lst->Data[curr_pos].value = value;
+
+        Lst->Data[curr_pos].prev                   = insert_pos;
+        Lst->Data[curr_pos].next                   = Lst->Data[insert_pos].next;
+        Lst->Data[Lst->Data[insert_pos].next].prev = curr_pos;
+        Lst->Data[insert_pos].next                 = curr_pos;
+    }
+}
+
+//-----------------------------------------------------------------------------
+
+void list_pop (List *Lst, int del_pos)
+{
+    if(del_pos > Lst->size || Lst->Data[del_pos].value == NANV)
+    {
+        printf ("ERROR - POP\n");
+    }
+
+    else if(Lst->head == Lst->tail && Lst->head == del_pos)
     {
         Lst->head = 0;
         Lst->tail = 0;
     }
-    
-    if(pos == Lst->head)
+
+    else if(del_pos == Lst->head)
     {
-        Lst->prev[Lst->next[Lst->head]] = 0;
-        int new_head = Lst->next[Lst->head];
-        Lst->next[Lst->head] = 0;
-        Lst->head = new_head;
+        Lst->Data[Lst->Data[Lst->head].next].prev = 0;
+        Lst->head = Lst->Data[Lst->head].next;
     }
 
-    else if(pos == Lst->tail)
+    else if(del_pos == Lst->tail)
     {
-        Lst->next[Lst->prev[Lst->tail]] = 0;
-        int new_tail = Lst->prev[Lst->tail];
-        Lst->prev[Lst->tail] = 0;
-        Lst-> tail = new_tail;
+        Lst->Data[Lst->Data[Lst->tail].prev].next = 0;
+        Lst->tail = Lst->Data[Lst->tail].prev;
     }
 
     else
     {
-        Lst->next[Lst->prev[pos]] = Lst->next[pos];
-        Lst->prev[Lst->next[pos]] = Lst->prev[pos];
+        Lst->Data[Lst->Data[del_pos].prev].next = Lst->Data[del_pos].next;
+        Lst->Data[Lst->Data[del_pos].next].prev = Lst->Data[del_pos].prev;
     }
 
-    Lst->next[pos] = 0;
-    Lst->prev[pos] = 0;
-    Lst->buffer[pos] = -1;
-
-    debug_list (Lst);
-
+    Lst->Data[del_pos].value = NANV;
+    Lst->Data[del_pos].next = Lst->Data[0].next;
+    Lst->Data[0].next = del_pos;
+    Lst->free = del_pos;
     Lst->size--;
 }
 
@@ -231,21 +261,21 @@ void debug_list (List *Lst)
 
     for (int i = 0; i < Lst->size; i++)
     {
-        printf ("%lg ", Lst->buffer[i]);
+        printf ("%lg ", Lst->Data[i].value);
     }
 
     printf ("\n");
 
     for (int i = 0; i < Lst->size; i++)
     {
-        printf ("%d ", Lst->next[i]);
+        printf ("%d ", Lst->Data[i].next);
     }
 
     printf ("\n");
 
     for (int i = 0; i < Lst->size; i++)
     {
-        printf ("%d ", Lst->prev[i]);
+        printf ("%d ", Lst->Data[i].prev);
     }
 
     printf ("\n_______________________________________________________________\n\n");

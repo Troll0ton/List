@@ -21,18 +21,20 @@
 
 enum Pars
 {
-    LST_INCREASE 1
-    LST_DECREASE 0
+    LST_INCREASE = 1,
+    LST_DECREASE = 0,
+    DELETED_PAR  = -1,
+    NANV         = 111,
 };
 
 //-----------------------------------------------------------------------------
 
-enum ERROR_LCODES
+typedef struct Node
 {
-    ERR_CAP     = (1 << 1),
-    ERR_DATA    = (1 << 2),
-    ERR_RESIZE  = (1 << 3),
-};
+    double value;
+    int    next;
+    int    prev;
+} Node;
 
 //-----------------------------------------------------------------------------
 
@@ -48,29 +50,10 @@ typedef struct List_info
 
 //-----------------------------------------------------------------------------
 
-typedef struct Error_info
-{
-    int     error_code;
-    char   *error_output;
-} Error_info;
-
-//-----------------------------------------------------------------------------
-
-const struct Error_info error_arr_l[]
-{
-    {ERR_CAP,    "ERROR - incorrect capacity value (below zero)                      \n"},
-    {ERR_DATA,   "ERROR - wrong calloc working                                       \n"},
-    {ERR_RESIZE, "ERROR - incorrect resize parameter                                 \n"},
-};
-
-//-----------------------------------------------------------------------------
-
 typedef struct List
 {
     List_info Info;
-    double   *buffer;
-    int      *next;
-    int      *prev;
+    Node     *Data;
     int       head;
     int       tail;
     int       free;
@@ -80,22 +63,33 @@ typedef struct List
 
 //-----------------------------------------------------------------------------
 
-void list_push_in   (List *Lst, double elem, int pos);
+void  list_push_right (List *Lst, double value, int insert_pos);
 
-void list_push_head (List *Lst, double elem);
+void  list_push_head  (List *Lst, double value);
 
-void list_resize    (List *Lst, int opt_resize);
+void  list_push_tail  (List *Lst, double value);
 
-void list_dtor      (List *Lst);
+void  free_space_ctor (List *Lst);
 
-int  list_ctor_     (List *Lst,             int capacity_ctor, const char* lst_name,
-                     const char* file_name, int lst_line                            );
+int   init_node       (List *Lst);
 
-void debug_list     (List *Lst);
+void  list_resize     (List *Lst, int opt_resize);
 
-void *recalloc      (void *buffer, int capacity, int size);
+void  list_dtor       (List *Lst);
 
-void list_pop       (List *Lst, int pos);
+void  list_info_dtor  (List *Lst);
+
+void  list_ctor_      (List       *Lst,       int capacity_ctor, const char* lst_name,
+                       const char* file_name, int lst_line                            );
+
+void  list_info_ctor  (List       *Lst,       const char* lst_name,
+                       const char* file_name, int         lst_line );
+
+void  debug_list      (List *Lst);
+
+void *recalloc        (void *buffer, int capacity, int size, int size_of_type);
+
+void  list_pop        (List *Lst, int del_pos);
 
 //-----------------------------------------------------------------------------
 
