@@ -2,53 +2,89 @@
 
 //-----------------------------------------------------------------------------
 
-void list_ctor_ (List       *Lst,       int capacity_ctor, const char* lst_name,
-                 const char* file_name, int lst_line                            )
+int list_ctor_ (List       *Lst,       int capacity_ctor, const char* lst_name,
+                const char* file_name, int lst_line                            )
 {
     Lst->capacity = capacity_ctor + 1;
     Lst->size = 1;
     Lst->head = 0;
     Lst->tail = 0;
 
-    if (capacity_ctor >= 0)
+    list_info_ctor (Lst, lst_name, file_name, lst_line);
+
+    if(capacity_ctor > 0)
     {
         Lst->Data = (Node*) calloc (capacity_ctor + 1, sizeof (Node));
 
-        if(Lst->Data == NULL)
+        if(Lst->Data != NULL)
         {
-            printf ("ERROR - Data\n");
+            for(int curr_pos = 1; curr_pos < Lst->capacity; curr_pos++)
+            {
+                Lst->Data[curr_pos].value = POISON;
+            }
         }
-    }
-
-    else
-    {
-        printf ("ERROR - CAP\n");
     }
 
     free_space_ctor (Lst);
 
-    list_info_ctor (Lst, capacity_ctor, lst_name, file_name, lst_line);
+    return verificate_list (Lst);
 }
 
 //-----------------------------------------------------------------------------
 
-void list_info_ctor (List       *Lst        int capacity_ctor, const char* lst_name,
-                     const char* file_name, int lst_line                            )
+void list_info_ctor (List       *Lst,       const char* lst_name,
+                     const char* file_name, int         lst_line )
 {
     Lst->Info.name = lst_name;
     Lst->Info.file = file_name;
     Lst->Info.line = lst_line;
 
-    Lst->Info.dbg_file    = fopen ("../dump/list_dump.txt", "w+");
+    Lst->Info.dbg_file = fopen ("../dump/list_dump.txt",  "w+");
+    Lst->Info.dot_file = fopen ("../dump/list_graph.dot", "w+");
+
     Lst->Info.error_codes = 0;
     Lst->Info.cur_status  = "OK";
+}
 
-    if(Lst->Info.dbg_file == NULL)
+//-----------------------------------------------------------------------------
+
+int verificate_list (List *Lst)
+{
+    handle_errors (Lst);
+
+    if(Lst->Data == NULL)          Lst->Info.error_codes |= ERR_MEMDATA;
+    if(Lst->size > Lst->capacity)  Lst->Info.error_codes |= ERR_OVERF;
+    if(Lst->capacity < 0)          Lst->Info.error_codes |= ERR_CAP;
+    if(Lst->size < 0)              Lst->Info.error_codes |= ERR_SIZE;
+    if(Lst->Info.dbg_file == NULL) Lst->Info.error_codes |= ERR_DBGFILE;
+    if(Lst->Info.dot_file == NULL) Lst->Info.error_codes |= ERR_DOTFILE;
+    if(Lst->Data[0].value != 0 ||
+       Lst->Data[0].prev  != 0   ) Lst->Info.error_codes |= ERR_NUL_ELEM;
+
+    if (Lst->Info.error_codes != 0)
     {
-        printf ("ERROR - FILE\n");
+        Lst->Info.cur_status = "ERROR";
+
+        return ERROR_LST;
     }
 
     return 0;
+}
+
+//-----------------------------------------------------------------------------
+
+void handle_errors (List *Lst)
+{
+    if(Lst->Info.error_codes != 0)
+    {
+        for(int i = 0; i < NUM_OF_MIS; i++)
+        {
+            if(Lst->Info.error_codes & error_arr[i].error_code)
+            {
+                printf ("%d %s\n", error_arr[i].error_code, error_arr[i].error_output);
+            }
+        }
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -59,15 +95,15 @@ void free_space_ctor (List *Lst)
 
     for(int curr_pos = 1; curr_pos < Lst->capacity; curr_pos++)
     {
-        if(Lst->Data[curr_pos].value == NANV)
+        if((int) Lst->Data[curr_pos].value == POISON)
         {
-            Lst->Data[curr_pos].next  = 0;
-            Lst->Data[prev_free].next = curr_pos;
-            prev_free                 = curr_pos;
+            Lst->Data[curr_pos].next = 0;
+            Lst->Data[curr_pos].prev = DELETED_PAR;
+            prev_free = Lst->Data[prev_free].next = curr_pos;
         }
     }
 
-    Lst->free = Lst->Data[0].next;
+    verificate_list (Lst);
 }
 
 //-----------------------------------------------------------------------------
@@ -88,6 +124,7 @@ void list_dtor (List *Lst)
 void list_info_dtor (List *Lst)
 {
     fclose (Lst->Info.dbg_file);
+    fclose (Lst->Info.dot_file);
 
     Lst->Info.error_codes = DELETED_PAR;
     Lst->Info.cur_status  = "DELETED";
@@ -114,32 +151,36 @@ void list_resize (List *Lst, int opt_resize)
 
     else
     {
-        Lst->Info.error_codes |= ERR_RESIZE;
+        printf ("ERROR - RESIZE\n");
     }
 
     Lst->Data = (Node*) recalloc (Lst->Data, Lst->capacity, Lst->size, sizeof (Node));
 
     free_space_ctor (Lst);
+
+    verificate_list (Lst);
 }
 
 //-----------------------------------------------------------------------------
 
 int init_node (List *Lst)
 {
-    if(Lst->free == 0 || ++(Lst->size) > Lst->capacity)
+    if(Lst->Data[0].next == 0 || ++(Lst->size) > Lst->capacity)
     {
         list_resize (Lst, LST_INCREASE);
     }
 
-    int curr_pos = Lst->free;
+    int curr_pos = Lst->Data[0].next;
 
-    Lst->free = Lst->Data[Lst->free].next;
+    Lst->Data[0].next = Lst->Data[Lst->Data[0].next].next;
 
     Lst->Data[curr_pos].value = 0;
     Lst->Data[curr_pos].next  = 0;
     Lst->Data[curr_pos].prev  = 0;
 
     return curr_pos;
+
+    verificate_list (Lst);
 }
 
 //-----------------------------------------------------------------------------
@@ -162,6 +203,8 @@ void list_push_head (List *Lst, double value)
     }
 
     Lst->head = curr_pos;
+
+    verificate_list (Lst);
 }
 
 //-----------------------------------------------------------------------------
@@ -184,6 +227,8 @@ void list_push_tail (List *Lst, double value)
     }
 
     Lst->tail = curr_pos;
+
+    verificate_list (Lst);
 }
 
 //-----------------------------------------------------------------------------
@@ -206,13 +251,74 @@ void list_push_right (List *Lst, double value, int insert_pos)
         Lst->Data[Lst->Data[insert_pos].next].prev = curr_pos;
         Lst->Data[insert_pos].next                 = curr_pos;
     }
+
+    verificate_list (Lst);
+}
+
+//-----------------------------------------------------------------------------
+
+int get_logic_pos (List* Lst, int logic_pos)
+{
+    int physc_pos = Lst->head;
+
+    for(int i = 0; i < logic_pos - 1; i++)
+    {
+        physc_pos = Lst->Data[physc_pos].next;
+    }
+
+    verificate_list (Lst);
+
+    return physc_pos;
+}
+
+//-----------------------------------------------------------------------------
+
+void rewrite_lst_lgc (List* Lst)
+{
+    List Lst_auxl = { 0 };
+
+    list_ctor (&Lst_auxl, Lst->capacity);
+
+    int curr_pos = Lst->head;
+
+    for(int i = 1; i < Lst->size; i++)
+    {
+        Lst_auxl.Data[i] = Lst->Data[curr_pos];
+        Lst_auxl.Data[i].prev = i - 1;
+        Lst_auxl.Data[i].next = i + 1;
+
+        curr_pos = Lst->Data[curr_pos].next;
+    }
+
+    for(int i = Lst->size; i < Lst->capacity - 1; i++)
+    {
+        Lst_auxl.Data[i].value = POISON;
+        Lst_auxl.Data[i].next = i + 1;
+        Lst_auxl.Data[i].prev = DELETED_PAR;
+    }
+
+    Lst_auxl.Data[Lst->capacity - 1].next = 0;
+    Lst_auxl.Data[Lst->capacity - 1].prev = DELETED_PAR;
+
+    for(int i = 1; i < Lst->capacity; i++)
+    {
+        Lst->Data[i] = Lst_auxl.Data[i];
+    }
+
+    list_dtor (&Lst_auxl);
+
+    Lst->Data[0].next = Lst->size;
+    Lst->head = 1;
+    Lst->tail = Lst->size - 1;
+
+    verificate_list (Lst);
 }
 
 //-----------------------------------------------------------------------------
 
 void list_pop (List *Lst, int del_pos)
 {
-    if(del_pos > Lst->size || Lst->Data[del_pos].value == NANV)
+    if(del_pos > Lst->size || (int) Lst->Data[del_pos].value == POISON)
     {
         printf ("ERROR - POP\n");
     }
@@ -241,44 +347,108 @@ void list_pop (List *Lst, int del_pos)
         Lst->Data[Lst->Data[del_pos].next].prev = Lst->Data[del_pos].prev;
     }
 
-    Lst->Data[del_pos].value = NANV;
-    Lst->Data[del_pos].next = Lst->Data[0].next;
+    Lst->Data[del_pos].value = POISON;
+    Lst->Data[del_pos].next  = Lst->Data[0].next;
+    Lst->Data[del_pos].prev  = DELETED_PAR;
     Lst->Data[0].next = del_pos;
-    Lst->free = del_pos;
     Lst->size--;
+
+    if(Lst->size < Lst->capacity / 4)
+    {
+        list_resize (Lst, LST_DECREASE);
+    }
+
+    verificate_list (Lst);
 }
 
 //-----------------------------------------------------------------------------
 
 void debug_list (List *Lst)
 {
-    printf ("_________________________LIST__________________________________\n\n");
+    fprintf (Lst->Info.dbg_file, "_________________________LIST__________________________________\n\n"
+                                 "%d - HEAD\n"
+                                 "%d - TAIL\n"
+                                 "%d - free\n"
+                                 "_______________________________________________________________\n\n",
+                                 Lst->head, Lst->tail, Lst->Data[0].next);
 
-    printf ("%d - HEAD\n", Lst->head);
-    printf ("%d - TAIL\n", Lst->tail);
-
-    printf ("_______________________________________________________________\n\n");
-
-    for (int i = 0; i < Lst->size; i++)
+    for(int i = 0; i < Lst->capacity; i++)
     {
-        printf ("%lg ", Lst->Data[i].value);
+        fprintf (Lst->Info.dbg_file, " %3d  ", i);
     }
 
-    printf ("\n");
+    fprintf (Lst->Info.dbg_file, "\n");
 
-    for (int i = 0; i < Lst->size; i++)
+    for (int i = 0; i < Lst->capacity; i++)
     {
-        printf ("%d ", Lst->Data[i].next);
+        if(Lst->Data[i].value == POISON)
+        {
+            fprintf (Lst->Info.dbg_file, "|___| ");
+        }
+
+        else
+        {
+            fprintf (Lst->Info.dbg_file, "|%3lg| ", Lst->Data[i].value);
+        }
     }
 
-    printf ("\n");
+    fprintf (Lst->Info.dbg_file, "\n");
 
-    for (int i = 0; i < Lst->size; i++)
+    for (int i = 0; i < Lst->capacity; i++)
     {
-        printf ("%d ", Lst->Data[i].prev);
+        fprintf (Lst->Info.dbg_file, "|%3d| ", Lst->Data[i].next);
     }
 
-    printf ("\n_______________________________________________________________\n\n");
+    fprintf (Lst->Info.dbg_file, "\n");
+
+    for (int i = 0; i < Lst->capacity; i++)
+    {
+        if(Lst->Data[i].prev == POISON || Lst->Data[i].prev == DELETED_PAR)
+        {
+            fprintf (Lst->Info.dbg_file, "|___| ");
+        }
+        else
+        {
+            fprintf (Lst->Info.dbg_file, "|%3d| ", Lst->Data[i].prev);
+        }
+    }
+
+    fprintf (Lst->Info.dbg_file, "_______________________________________________________________\n\n\n\n\n");
+}
+
+//-----------------------------------------------------------------------------
+
+void make_list_graph (List *Lst)
+{
+    int curr_pos = 0;
+    int id       = 0;
+    
+    fprintf (Lst->Info.dot_file, "digraph structs {\n"
+                                 "  rankdir=HR;    \n");
+  
+    while(Lst->Data[curr_pos].next != 0)
+    {
+        fprintf (Lst->Info.dot_file, "  cell%d [shape=record,label=%c { value: " "}%c ];",
+                                     id, QUOTES);
+
+        if(Lst->Data[curr_pos].value == POISON) fprintf (Lst->Info.dot_file, "_NAN_ ");
+        else                                    fprintf (Lst->Info.dot_file, "%lg ", Lst->Data[curr_pos].value);
+
+        fprintf (Lst->Info.dot_file, "| next: %d | prev: ", Lst->Data[curr_pos].next);
+
+        if(Lst->Data[curr_pos].value == DELETED_PAR) fprintf (Lst->Info.dot_file, "_____");
+        else                                         fprintf (Lst->Info.dot_file, "%d", Lst->Data[curr_pos].prev);
+
+        fprintf (Lst->Info.dot_file, "}%c ];\n", QUOTES);
+
+        id++;
+    }
+                                 
+    for(int i = 0; i < id; i++)
+    {
+         fprintf (Lst->Info.dot_file, "digraph structs {\n"
+                                 "  rankdir=HR;    \n");
+    }
 }
 
 //-----------------------------------------------------------------------------

@@ -24,6 +24,11 @@ enum Pars
     LST_INCREASE = 1,
     LST_DECREASE = 0,
     DELETED_PAR  = -1,
+    POISON       = 0xDEBEBA,
+    NUM_OF_MIS   = 7,
+    FATAL_ERR    = 0xBADBED,
+    FATAL_ERR    = 0xBADBED,
+    QUOTES       = 34;
 };
 
 //-----------------------------------------------------------------------------
@@ -42,6 +47,7 @@ typedef struct List_info
     const char *name;
     const char *file;
     FILE       *dbg_file;
+    FILE       *dot_file;
     int         line;
     int         error_codes;
     char       *cur_status;
@@ -55,10 +61,45 @@ typedef struct List
     Node     *Data;
     int       head;
     int       tail;
-    int       free;
     int       capacity;
     int       size;
 } List;
+
+//-----------------------------------------------------------------------------
+
+typedef struct Error_info
+{
+    int     error_code;
+    char   *error_output;
+} Error_info;
+
+//-----------------------------------------------------------------------------
+
+enum ERROR_CODES
+{
+    ERR_MEMDATA  = (1 << 1),
+    ERR_OVERF    = (1 << 2),
+    ERR_CAP      = (1 << 3),
+    ERR_SIZE     = (1 << 4),
+    ERR_DBGFILE  = (1 << 5),
+    ERR_DOTFILE  = (1 << 6),
+    ERR_NUL_ELEM = (1 << 7),
+    
+    ERROR_LST    = FATAL_ERR,
+};
+
+//-----------------------------------------------------------------------------
+
+const Error_info error_arr[]
+{
+    {ERR_MEMDATA,  "ERROR - null pointer to data                  \n"},
+    {ERR_OVERF,    "ERROR - list overflow                         \n"},
+    {ERR_CAP,      "ERROR - incorrect capacity value (below zero) \n"},
+    {ERR_SIZE,     "ERROR - incorrect size value (below zero)     \n"},
+    {ERR_DBGFILE,  "ERROR - incorrect dbg FILE pointer            \n"},
+    {ERR_DOTFILE,  "ERROR - incorrect dot FILE pointer            \n"},
+    {ERR_NUL_ELEM, "ERROR - nul elem error                        \n"},
+};
 
 //-----------------------------------------------------------------------------
 
@@ -78,17 +119,27 @@ void  list_dtor       (List *Lst);
 
 void  list_info_dtor  (List *Lst);
 
-void  list_ctor_      (List       *Lst,       int capacity_ctor, const char* lst_name,
+int   get_logic_pos   (List* Lst, int logic_pos);
+
+void  rewrite_lst_lgc (List* Lst);
+
+int   list_ctor_      (List       *Lst,       int capacity_ctor, const char* lst_name,
                        const char* file_name, int lst_line                            );
 
-void  list_info_ctor  (List       *Lst        int capacity_ctor, const char* lst_name,
-                       const char* file_name, int lst_line                            )
+void  list_info_ctor  (List       *Lst,       const char* lst_name,
+                       const char* file_name, int         lst_line );
 
 void  debug_list      (List *Lst);
 
-void *recalloc        (void *buffer, int capacity, int size);
+void *recalloc        (void *buffer, int capacity, int size, int size_of_type);
 
 void  list_pop        (List *Lst, int del_pos);
+
+void  handle_errors   (List *Lst);
+
+int   verificate_list (List *Lst);
+
+void  make_list_graph (List *Lst);
 
 //-----------------------------------------------------------------------------
 

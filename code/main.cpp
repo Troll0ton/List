@@ -4,51 +4,43 @@
 
 int main ()
 {
-    List Lst1 = { 0 };
+    List Lst = { 0 };
 
-    list_ctor (&Lst1, 15);
+    if(list_ctor (&Lst, 15) == ERROR_LST)
+    {
+        printf ("ERROR - CTOR\n");
 
-    list_push_head (&Lst1, 300);
-    list_push_head (&Lst1, 200);
-    list_push_head (&Lst1, 100);
-    list_push_tail (&Lst1, 400);
-    list_push_tail (&Lst1, 500);
-    list_push_right (&Lst1, 600, 5);
+        return -1;
+    }
 
-    list_pop (&Lst1, 5);
-    list_pop (&Lst1, 4);
+    list_push_head (&Lst, 300);
+    list_push_head (&Lst, 200);
+    list_push_head (&Lst, 100);
 
-    list_push_head (&Lst1, 656);
-    list_push_head (&Lst1, 656);
-    list_push_head (&Lst1, 656);
-    list_push_head (&Lst1, 656);
-    list_push_head (&Lst1, 656);
-    list_push_head (&Lst1, 656);
-    list_push_head (&Lst1, 656);
-    list_push_head (&Lst1, 656);
-    list_push_head (&Lst1, 656);
-    list_push_head (&Lst1, 656);
-    list_push_head (&Lst1, 656);
-    list_push_head (&Lst1, 656);
-    list_push_head (&Lst1, 656);
-    list_push_tail (&Lst1, 222);
+    debug_list (&Lst);
 
-    list_pop (&Lst1, 18);
-    list_pop (&Lst1, 17);
-    list_pop (&Lst1, 16);
-    list_pop (&Lst1, 15);
-    list_pop (&Lst1, 14);
-    list_pop (&Lst1, 13);
-    list_pop (&Lst1, 12);
-    list_pop (&Lst1, 11);
-    list_pop (&Lst1, 10);
-    list_pop (&Lst1, 9);
-    list_pop (&Lst1, 8);
-    list_pop (&Lst1, 7);
+    list_push_tail (&Lst, 400);
+    list_push_tail (&Lst, 500);
+    list_push_right (&Lst, 600, 5);
 
-    debug_list (&Lst1);
+    list_pop (&Lst, 5);
+    list_pop (&Lst, 4);
 
-    list_dtor (&Lst1);
+    list_push_head (&Lst, 656);
+
+    debug_list (&Lst);
+
+    rewrite_lst_lgc (&Lst);
+    list_pop (&Lst, 1);
+    list_pop (&Lst, 5);
+
+    rewrite_lst_lgc (&Lst);
+
+    make_list_graph (&Lst);
+
+    debug_list (&Lst);
+
+    list_dtor (&Lst);
 
     return 0;
 }

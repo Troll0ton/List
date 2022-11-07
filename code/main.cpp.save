@@ -4,20 +4,41 @@
 
 int main ()
 {
-    List Lst1 = { 0 };
+    List Lst = { 0 };
 
-    list_ctor (&Lst1, 15);
+    if(list_ctor (&Lst, 15) == ERROR_LST)
+    {
+        printf ("ERROR - CTOR\n");
 
-/*
-    list_push_head (&Lst1, 300);
-    list_push_in (&Lst1, 301, 1);
-    list_push_in (&Lst1, 302, 2);
-    list_push_in (&Lst1, 303, 3);
-    list_push_in (&Lst1, 999, 2);
+        return -1;
+    }
 
-    list_pop (&Lst1, 5);
+    list_push_head (&Lst, 300);
+    list_push_head (&Lst, 200);
+    list_push_head (&Lst, 100);
+    
+    debug_list (&Lst);
+    
+    list_push_tail (&Lst, 400);
+    list_push_tail (&Lst, 500);
+    list_push_right (&Lst, 600, 5);
 
-    list_dtor (&Lst1);  */
+    list_pop (&Lst, 5);
+    list_pop (&Lst, 4);
+
+    list_push_head (&Lst, 656);
+
+    debug_list (&Lst);
+
+    rewrite_lst_lgc (&Lst);
+    list_pop (&Lst, 1);
+    list_pop (&Lst, 5);
+    
+    make_list_graph (&Lst);
+
+    debug_list (&Lst);
+
+    list_dtor (&Lst);
 
     return 0;
 }
