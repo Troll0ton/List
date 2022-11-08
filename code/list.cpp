@@ -428,12 +428,19 @@ void make_list_graph (List *Lst)
     int id       = 1;
 
     fprintf (Lst->Info.dot_file, "digraph structs {\n"
-                                 "  rankdir=HR;    \n");
+                                 "  rankdir=LR;    \n");
 
-    while(1)
+    fprintf (Lst->Info.dot_file, "cell0 [style= %cfilled%c , color= %paleturquoise1%c, fillcolor= %blue%c, "
+                                 "shape=record,label=%c id: 0 | NULL | %d | NULL %c ];\n",
+                                 QUOTES, QUOTES, QUOTES, QUOTES, QUOTES, QUOTES,
+                                 QUOTES, Lst->Data[0].next, QUOTES);
+
+    while(1)                                                                                           //palegreen1
     {
-        fprintf (Lst->Info.dot_file, "  cell%d [shape=record,label=%c { value: ",
-                                     id, QUOTES);
+        fprintf (Lst->Info.dot_file, "  cell%d [style= %cfilled%c , color= %cblack%c, fillcolor= %lightsalmon%c, "
+                                     "shape=record,label=%c id: %d | value: ",
+                                     id, QUOTES, QUOTES, QUOTES, QUOTES, QUOTES, QUOTES,
+                                     QUOTES, id);
 
         if((int) Lst->Data[curr_pos].value == POISON) fprintf (Lst->Info.dot_file, "_NAN_ ");
         else                                          fprintf (Lst->Info.dot_file, "%5lg ", Lst->Data[curr_pos].value);
@@ -443,7 +450,7 @@ void make_list_graph (List *Lst)
         if((int) Lst->Data[curr_pos].prev == DELETED_PAR) fprintf (Lst->Info.dot_file, "_____");
         else                                              fprintf (Lst->Info.dot_file, "%5d", Lst->Data[curr_pos].prev);
 
-        fprintf (Lst->Info.dot_file, "}%c ];\n", QUOTES);
+        fprintf (Lst->Info.dot_file, "%c ];\n", QUOTES);
 
         if((int) Lst->Data[curr_pos].next == 0) break;
 

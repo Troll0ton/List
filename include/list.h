@@ -17,6 +17,8 @@
 
 #define list_ctor(Lst, capacity) list_ctor_ (Lst, capacity, #Lst, __FILE__,  __LINE__)
 
+#define dot_print(...) list_ctor_ (Lst, __VA_ARGS__)
+
 //-----------------------------------------------------------------------------
 
 enum Pars

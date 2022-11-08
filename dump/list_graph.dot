@@ -1,9 +1,10 @@
 digraph structs {
-  rankdir=HR;    
-  cell1 [shape=record,label=" { value:   656 | next:     2 | prev:     0}" ];
-  cell2 [shape=record,label=" { value:   100 | next:     3 | prev:     1}" ];
-  cell3 [shape=record,label=" { value:   200 | next:     4 | prev:     2}" ];
-  cell4 [shape=record,label=" { value:   300 | next:     5 | prev:     3}" ];
-  cell5 [shape=record,label=" { value:   600 | next:     0 | prev:     4}" ];
+  rankdir=LR;    
+cell0 [style= "filled" , color= "black", fillcolor= "skyblue", shape=record,label=" id: 0 | NULL | 6 | NULL " ];
+  cell1 [style= "filled" , color= "black", fillcolor= "skyblue", shape=record,label=" id: 1 | value:   656 | next:     2 | prev:     0" ];
+  cell2 [style= "filled" , color= "black", fillcolor= "skyblue", shape=record,label=" id: 2 | value:   100 | next:     3 | prev:     1" ];
+  cell3 [style= "filled" , color= "black", fillcolor= "skyblue", shape=record,label=" id: 3 | value:   200 | next:     4 | prev:     2" ];
+  cell4 [style= "filled" , color= "black", fillcolor= "skyblue", shape=record,label=" id: 4 | value:   300 | next:     5 | prev:     3" ];
+  cell5 [style= "filled" , color= "black", fillcolor= "skyblue", shape=record,label=" id: 5 | value:   600 | next:     0 | prev:     4" ];
   cell0 -> cell1 -> cell2 -> cell3 -> cell4 -> cell5;
 }

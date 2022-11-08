@@ -17,6 +17,8 @@
 
 #define list_ctor(Lst, capacity) list_ctor_ (Lst, capacity, #Lst, __FILE__,  __LINE__)
 
+#define dot_print(...) list_ctor_ (Lst, __VA_ARGS__)
+
 //-----------------------------------------------------------------------------
 
 enum Pars
@@ -26,9 +28,7 @@ enum Pars
     DELETED_PAR  = -1,
     POISON       = 0xDEBEBA,
     NUM_OF_MIS   = 7,
-    FATAL_ERR    = 0xBADBED,
-    FATAL_ERR    = 0xBADBED,
-    QUOTES       = 34;
+    QUOTES       = 34,
 };
 
 //-----------------------------------------------------------------------------
@@ -84,8 +84,8 @@ enum ERROR_CODES
     ERR_DBGFILE  = (1 << 5),
     ERR_DOTFILE  = (1 << 6),
     ERR_NUL_ELEM = (1 << 7),
-    
-    ERROR_LST    = FATAL_ERR,
+
+    ERROR_LST    = 0xBADBED,
 };
 
 //-----------------------------------------------------------------------------
