@@ -1,10 +1,21 @@
 digraph structs {
   rankdir=LR;    
-cell0 [style= "filled" , color= "black", fillcolor= "skyblue", shape=record,label=" id: 0 | NULL | 6 | NULL " ];
-  cell1 [style= "filled" , color= "black", fillcolor= "skyblue", shape=record,label=" id: 1 | value:   656 | next:     2 | prev:     0" ];
-  cell2 [style= "filled" , color= "black", fillcolor= "skyblue", shape=record,label=" id: 2 | value:   100 | next:     3 | prev:     1" ];
-  cell3 [style= "filled" , color= "black", fillcolor= "skyblue", shape=record,label=" id: 3 | value:   200 | next:     4 | prev:     2" ];
-  cell4 [style= "filled" , color= "black", fillcolor= "skyblue", shape=record,label=" id: 4 | value:   300 | next:     5 | prev:     3" ];
-  cell5 [style= "filled" , color= "black", fillcolor= "skyblue", shape=record,label=" id: 5 | value:   600 | next:     0 | prev:     4" ];
+cell0 [style= "filled" , color= "black", fillcolor= "paleturquoise1", shape=record,label=" id: 0 | NULL | 6 | NULL " ];
+  cell1 [style= "filled" , color= "black", fillcolor= "lightsalmon", shape=record,label=" id: 1 | value:   656 | next:     2 | prev:     0" ];
+  cell2 [style= "filled" , color= "black", fillcolor= "lightsalmon", shape=record,label=" id: 2 | value:   100 | next:     3 | prev:     1" ];
+  cell3 [style= "filled" , color= "black", fillcolor= "lightsalmon", shape=record,label=" id: 3 | value:   200 | next:     4 | prev:     2" ];
+  cell4 [style= "filled" , color= "black", fillcolor= "lightsalmon", shape=record,label=" id: 4 | value:   300 | next:     5 | prev:     3" ];
+  cell5 [style= "filled" , color= "black", fillcolor= "lightsalmon", shape=record,label=" id: 5 | value:   600 | next:     0 | prev:     4" ];
+  cell6 [style= "filled" , color= "black", fillcolor= "palegreen1", shape=record,label=" id: 6 | value: FREE | next:     7 | prev: FREE " ];
+  cell7 [style= "filled" , color= "black", fillcolor= "palegreen1", shape=record,label=" id: 7 | value: FREE | next:     8 | prev: FREE " ];
+  cell8 [style= "filled" , color= "black", fillcolor= "palegreen1", shape=record,label=" id: 8 | value: FREE | next:     9 | prev: FREE " ];
+  cell9 [style= "filled" , color= "black", fillcolor= "palegreen1", shape=record,label=" id: 9 | value: FREE | next:    10 | prev: FREE " ];
+  cell10 [style= "filled" , color= "black", fillcolor= "palegreen1", shape=record,label=" id: 10 | value: FREE | next:    11 | prev: FREE " ];
+  cell11 [style= "filled" , color= "black", fillcolor= "palegreen1", shape=record,label=" id: 11 | value: FREE | next:    12 | prev: FREE " ];
+  cell12 [style= "filled" , color= "black", fillcolor= "palegreen1", shape=record,label=" id: 12 | value: FREE | next:    13 | prev: FREE " ];
+  cell13 [style= "filled" , color= "black", fillcolor= "palegreen1", shape=record,label=" id: 13 | value: FREE | next:    14 | prev: FREE " ];
+  cell14 [style= "filled" , color= "black", fillcolor= "palegreen1", shape=record,label=" id: 14 | value: FREE | next:    15 | prev: FREE " ];
+  cell15 [style= "filled" , color= "black", fillcolor= "palegreen1", shape=record,label=" id: 15 | value: FREE | next:     0 | prev: FREE " ];
   cell0 -> cell1 -> cell2 -> cell3 -> cell4 -> cell5;
+cell0 -> cell6 -> cell7 -> cell8 -> cell9 -> cell10 -> cell11 -> cell12 -> cell13 -> cell14 -> cell15;
 }

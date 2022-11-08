@@ -430,14 +430,14 @@ void make_list_graph (List *Lst)
     fprintf (Lst->Info.dot_file, "digraph structs {\n"
                                  "  rankdir=LR;    \n");
 
-    fprintf (Lst->Info.dot_file, "cell0 [style= %cfilled%c , color= %paleturquoise1%c, fillcolor= %blue%c, "
+    fprintf (Lst->Info.dot_file, "cell0 [style= %cfilled%c , color= %cblack%c, fillcolor= %cpaleturquoise1%c, "
                                  "shape=record,label=%c id: 0 | NULL | %d | NULL %c ];\n",
                                  QUOTES, QUOTES, QUOTES, QUOTES, QUOTES, QUOTES,
                                  QUOTES, Lst->Data[0].next, QUOTES);
 
-    while(1)                                                                                           //palegreen1
+    while(1)
     {
-        fprintf (Lst->Info.dot_file, "  cell%d [style= %cfilled%c , color= %cblack%c, fillcolor= %lightsalmon%c, "
+        fprintf (Lst->Info.dot_file, "  cell%d [style= %cfilled%c , color= %cblack%c, fillcolor= %clightsalmon%c, "
                                      "shape=record,label=%c id: %d | value: ",
                                      id, QUOTES, QUOTES, QUOTES, QUOTES, QUOTES, QUOTES,
                                      QUOTES, id);
@@ -459,9 +459,39 @@ void make_list_graph (List *Lst)
         id++;
     }
 
+    int id_fill = id;
+    id++;
+
+    curr_pos = Lst->Data[0].next;
+
+    while(1)
+    {
+        fprintf (Lst->Info.dot_file, "  cell%d [style= %cfilled%c , color= %cblack%c, fillcolor= %cpalegreen1%c, "
+                                     "shape=record,label=%c id: %d | value: FREE ",
+                                     id, QUOTES, QUOTES, QUOTES, QUOTES, QUOTES, QUOTES,
+                                     QUOTES, id);
+
+        fprintf (Lst->Info.dot_file, "| next: %5d | prev: FREE %c ];\n", Lst->Data[curr_pos].next, QUOTES);
+
+        if((int) Lst->Data[curr_pos].next == 0) break;
+
+        curr_pos = Lst->Data[curr_pos].next;
+
+        id++;
+    }
+
     fprintf (Lst->Info.dot_file, "  ");
 
-    for(int i = 0; i < id; i++)
+    for(int i = 0; i < id_fill; i++)
+    {
+         fprintf (Lst->Info.dot_file, "cell%d -> ", i);
+    }
+
+    fprintf (Lst->Info.dot_file, "cell%d;\n", id_fill);
+
+    fprintf (Lst->Info.dot_file, "cell0 -> ");
+
+    for(int i = id_fill + 1; i < id; i++)
     {
          fprintf (Lst->Info.dot_file, "cell%d -> ", i);
     }
