@@ -21,14 +21,20 @@
 
 //-----------------------------------------------------------------------------
 
+enum Nums
+{
+    POISON     = 0xDEBEBA,
+    NUM_OF_MIS = 12,
+    QUOTES     = 34,
+};
+
+//-----------------------------------------------------------------------------
+
 enum Pars
 {
     LST_INCREASE = 1,
     LST_DECREASE = 0,
     DELETED_PAR  = -1,
-    POISON       = 0xDEBEBA,
-    NUM_OF_MIS   = 7,
-    QUOTES       = 34,
 };
 
 //-----------------------------------------------------------------------------
@@ -46,9 +52,9 @@ typedef struct List_info
 {
     const char *name;
     const char *file;
+    int         line;
     FILE       *dbg_file;
     FILE       *dot_file;
-    int         line;
     int         error_codes;
     char       *cur_status;
 } List_info;
@@ -84,7 +90,13 @@ enum ERROR_CODES
     ERR_DBGFILE  = (1 << 5),
     ERR_DOTFILE  = (1 << 6),
     ERR_NUL_ELEM = (1 << 7),
-
+    ERR_RESIZE   = (1 << 8),
+    ERR_HT_VALUE = (1 << 9),
+    ERR_BZ_VALUE = (1 << 10),
+    ERR_PUSH     = (1 << 11),
+    ERR_POP      = (1 << 12),
+    ERR_GET_POS  = (1 << 12),
+    
     ERROR_LST    = 0xBADBED,
 };
 
@@ -99,6 +111,12 @@ const Error_info error_arr[]
     {ERR_DBGFILE,  "ERROR - incorrect dbg FILE pointer            \n"},
     {ERR_DOTFILE,  "ERROR - incorrect dot FILE pointer            \n"},
     {ERR_NUL_ELEM, "ERROR - nul elem error                        \n"},
+    {ERR_RESIZE,   "ERROR - wrong resize parameter                \n"},
+    {ERR_HT_VALUE, "ERROR - wrong data values                     \n"},
+    {ERR_BZ_VALUE, "ERROR - head or tail below zero               \n"},
+    {ERR_PUSH,     "ERROR - push in incorrect position            \n"},
+    {ERR_POP,      "ERROR - pop - incorrect position              \n"},
+    {ERR_GET_POS,  "ERROR - get_logc_position - incorrect position\n"},
 };
 
 //-----------------------------------------------------------------------------
