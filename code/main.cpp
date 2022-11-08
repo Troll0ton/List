@@ -31,14 +31,10 @@ int main ()
     debug_list (&Lst);
 
     rewrite_lst_lgc (&Lst);
-    list_pop (&Lst, 1);
-    list_pop (&Lst, 5);
-
-    rewrite_lst_lgc (&Lst);
-
-    make_list_graph (&Lst);
 
     debug_list (&Lst);
+
+    make_list_graph (&Lst);
 
     list_dtor (&Lst);
 

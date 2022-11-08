@@ -281,7 +281,7 @@ void rewrite_lst_lgc (List* Lst)
 
     int curr_pos = Lst->head;
 
-    for(int i = 1; i < Lst->size; i++)
+    for(int i = 1; i < Lst->size - 1; i++)
     {
         Lst_auxl.Data[i] = Lst->Data[curr_pos];
         Lst_auxl.Data[i].prev = i - 1;
@@ -289,6 +289,10 @@ void rewrite_lst_lgc (List* Lst)
 
         curr_pos = Lst->Data[curr_pos].next;
     }
+
+    Lst_auxl.Data[Lst->size - 1].value = Lst->Data[Lst->tail].value;
+    Lst_auxl.Data[Lst->size - 1].next  = 0;
+    Lst_auxl.Data[Lst->size - 1].prev  = Lst->size - 2;
 
     for(int i = Lst->size; i < Lst->capacity - 1; i++)
     {
@@ -420,8 +424,8 @@ void debug_list (List *Lst)
 
 void make_list_graph (List *Lst)
 {
-    int curr_pos = 0;
-    int id       = 0;
+    int curr_pos = Lst->head;
+    int id       = 1;
 
     fprintf (Lst->Info.dot_file, "digraph structs {\n"
                                  "  rankdir=HR;    \n");
@@ -432,12 +436,12 @@ void make_list_graph (List *Lst)
                                      id, QUOTES);
 
         if((int) Lst->Data[curr_pos].value == POISON) fprintf (Lst->Info.dot_file, "_NAN_ ");
-        else                                          fprintf (Lst->Info.dot_file, "%lg ", Lst->Data[curr_pos].value);
+        else                                          fprintf (Lst->Info.dot_file, "%5lg ", Lst->Data[curr_pos].value);
 
-        fprintf (Lst->Info.dot_file, "| next: %d | prev: ", Lst->Data[curr_pos].next);
+        fprintf (Lst->Info.dot_file, "| next: %5d | prev: ", Lst->Data[curr_pos].next);
 
-        if((int) Lst->Data[curr_pos].value == DELETED_PAR) fprintf (Lst->Info.dot_file, "_____");
-        else                                               fprintf (Lst->Info.dot_file, "%d", Lst->Data[curr_pos].prev);
+        if((int) Lst->Data[curr_pos].prev == DELETED_PAR) fprintf (Lst->Info.dot_file, "_____");
+        else                                              fprintf (Lst->Info.dot_file, "%5d", Lst->Data[curr_pos].prev);
 
         fprintf (Lst->Info.dot_file, "}%c ];\n", QUOTES);
 
