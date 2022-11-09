@@ -1,0 +1,45 @@
+digraph structs {          
+rankdir   =  TB;           
+cell0 [style = filled , color = black, fillcolor = paleturquoise1, shape=record,label=" { <nul> id: 0 | NULL | <frn0> FREE: 11 | NULL } " ];
+cell1 [style = filled, color = black, fillcolor = lightsalmon, shape=record,label=" { id: 1 | value:   656 |<nxt1> next:     2 | <prv1> prev:     0} " ];
+cell2 [style = filled, color = black, fillcolor = lightsalmon, shape=record,label=" { id: 2 | value:   100 |<nxt2> next:     3 | <prv2> prev:     1} " ];
+cell3 [style = filled, color = black, fillcolor = lightsalmon, shape=record,label=" { id: 3 | value:   200 |<nxt3> next:     4 | <prv3> prev:     2} " ];
+cell4 [style = filled, color = black, fillcolor = lightsalmon, shape=record,label=" { id: 4 | value:   500 |<nxt4> next:     5 | <prv4> prev:     3} " ];
+cell5 [style = filled, color = black, fillcolor = lightsalmon, shape=record,label=" { id: 5 | value:   700 |<nxt5> next:     6 | <prv5> prev:     4} " ];
+cell6 [style = filled, color = black, fillcolor = lightsalmon, shape=record,label=" { id: 6 | value:   500 |<nxt6> next:     7 | <prv6> prev:     5} " ];
+cell7 [style = filled, color = black, fillcolor = lightsalmon, shape=record,label=" { id: 7 | value:   400 |<nxt7> next:     8 | <prv7> prev:     6} " ];
+cell8 [style = filled, color = black, fillcolor = lightsalmon, shape=record,label=" { id: 8 | value:   200 |<nxt8> next:     9 | <prv8> prev:     7} " ];
+cell9 [style = filled, color = black, fillcolor = lightsalmon, shape=record,label=" { id: 9 | value:   400 |<nxt9> next:    10 | <prv9> prev:     8} " ];
+cell10 [style = filled, color = black, fillcolor = lightsalmon, shape=record,label=" { id: 10 | value:   500 |<nxt10> next:     0 | <prv10> prev:     9} " ];
+  cell11 [style = filled , color = black, fillcolor = palegreen1, shape=record,label=" { id: 11 | value: FREE | <frn11> next:    12 | prev: FREE } " ];
+  cell12 [style = filled , color = black, fillcolor = palegreen1, shape=record,label=" { id: 12 | value: FREE | <frn12> next:    13 | prev: FREE } " ];
+  cell13 [style = filled , color = black, fillcolor = palegreen1, shape=record,label=" { id: 13 | value: FREE | <frn13> next:    14 | prev: FREE } " ];
+  cell14 [style = filled , color = black, fillcolor = palegreen1, shape=record,label=" { id: 14 | value: FREE | <frn14> next:    15 | prev: FREE } " ];
+  cell15 [style = filled , color = black, fillcolor = palegreen1, shape=record,label=" { id: 15 | value: FREE | <frn15> next:     0 | prev: FREE } " ];
+{ rank = same; cell0; cell1; cell2; cell3; cell4; cell5; cell6; cell7; cell8; cell9; cell10; cell11; cell12; cell13; cell14; cell15; }
+ edge[constraint = false]
+cell1: <nxt1> -> cell2: <nxt2>;
+cell2: <prv2> -> cell1: <prv1>;
+cell2: <nxt2> -> cell3: <nxt3>;
+cell3: <prv3> -> cell2: <prv2>;
+cell3: <nxt3> -> cell4: <nxt4>;
+cell4: <prv4> -> cell3: <prv3>;
+cell4: <nxt4> -> cell5: <nxt5>;
+cell5: <prv5> -> cell4: <prv4>;
+cell5: <nxt5> -> cell6: <nxt6>;
+cell6: <prv6> -> cell5: <prv5>;
+cell6: <nxt6> -> cell7: <nxt7>;
+cell7: <prv7> -> cell6: <prv6>;
+cell7: <nxt7> -> cell8: <nxt8>;
+cell8: <prv8> -> cell7: <prv7>;
+cell8: <nxt8> -> cell9: <nxt9>;
+cell9: <prv9> -> cell8: <prv8>;
+cell9: <nxt9> -> cell10: <nxt10>;
+cell10: <prv10> -> cell9: <prv9>;
+cell0: <nul> -> cell1: <nxt1>;  
+cell0: <frn0> -> cell11: <frn11>;
+cell11: <frn11> -> cell12: <frn12>;
+cell12: <frn12> -> cell13: <frn13>;
+cell13: <frn13> -> cell14: <frn14>;
+cell14: <frn14> -> cell15: <frn15>;
+}

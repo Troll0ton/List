@@ -37,6 +37,11 @@ int main ()
 
     debug_list (&Lst);
 
+    list_pop (&Lst, 5);
+    list_pop (&Lst, 4);
+
+    debug_list (&Lst);
+
     list_dtor (&Lst);
 
     return 0;

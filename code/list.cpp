@@ -40,42 +40,10 @@ void list_info_ctor (List       *Lst,       const char* lst_name,
     Lst->Info.file      = file_name;
     Lst->Info.graph_num = 1;
 
-    Lst->Info.dbg_file = fopen ("../dump/list_dump.html",  "w+");
-    Lst->Info.dot_file = fopen ("../dump/list_graph.dot", "w+");
+    Lst->Info.dbg_file  = fopen ("../dump/list_dump.html",  "w+");
 
     Lst->Info.cur_status  = "OK";
     Lst->Info.error_codes = 0;
-}
-
-//-----------------------------------------------------------------------------
-
-int verificate_list (List *Lst)
-{
-    handle_errors (Lst);
-
-    if(Lst->Data == NULL)                     Lst->Info.error_codes |= ERR_MEMDATA;
-    if(Lst->size > Lst->capacity)             Lst->Info.error_codes |= ERR_OVERF;
-    if(Lst->capacity < 0)                     Lst->Info.error_codes |= ERR_CAP;
-    if(Lst->size < 0)                         Lst->Info.error_codes |= ERR_SIZE;
-    if(Lst->Info.dbg_file == NULL)            Lst->Info.error_codes |= ERR_DBGFILE;
-    if(Lst->Info.dot_file == NULL)            Lst->Info.error_codes |= ERR_DOTFILE;
-
-    if((Lst->head == 0 && Lst->tail != 0) ||
-       (Lst->head != 0 && Lst->tail == 0)   ) Lst->Info.error_codes |= ERR_HT_VALUE;
-
-    if(Lst->head < 0  || Lst->tail < 0)       Lst->Info.error_codes |= ERR_BZ_VALUE;
-
-    if((int) Lst->Data[0].value != 0 ||
-       (int) Lst->Data[0].prev  != 0   )      Lst->Info.error_codes |= ERR_NUL_ELEM;
-
-    if (Lst->Info.error_codes != 0)
-    {
-        Lst->Info.cur_status = "ERROR";
-
-        return ERROR_LST;
-    }
-
-    return 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -84,6 +52,7 @@ void handle_errors (List *Lst)
 {
     if(Lst->Info.error_codes != 0)
     {
+        // N(ERROR)
         for(int i = 0; i < NUM_OF_MIS; i++)
         {
             if(Lst->Info.error_codes & error_arr[i].error_code)
@@ -169,6 +138,9 @@ void list_resize (List *Lst, int opt_resize)
 }
 
 //-----------------------------------------------------------------------------
+
+#define DATA(i) Lst->Data[i]
+// ...
 
 int init_node (List *Lst)
 {
@@ -302,6 +274,7 @@ int get_logic_pos (List* Lst, int logic_pos)
 }
 
 //-----------------------------------------------------------------------------
+// list_linerize
 
 void rewrite_lst_lgc (List* Lst)
 {
@@ -407,12 +380,16 @@ void debug_list (List *Lst)
 
     dbg_print ("<pre>\n"
                "_________________________LIST__________________________________\n\n"
+               "%s[%p](%s) at %s, LINE - %d \n"
                "%d - head\n"
                "%d - tail\n"
                "%d - free\n"
                "%d - size\n"
                "%d - capacity\n"
                "_______________________________________________________________\n\n",
+               Lst->Info.name + 1,    Lst,
+               Lst->Info.cur_status, (Lst->Info).file,
+               Lst->Info.line,
                Lst->head, Lst->tail, Lst->Data[0].next, Lst->size, Lst->capacity);
 
     make_list_graph (Lst);
@@ -426,6 +403,12 @@ void make_list_graph (List *Lst)
 {
     int curr_pos = Lst->head;
     int id       = 1;
+
+    Lst->Info.dot_file = fopen ("../dump/list_graph.dot", "w+");
+
+    if(Lst->Info.dot_file == NULL) Lst->Info.error_codes |= ERR_DOTFILE;
+
+    verificate_list (Lst);
 
     dot_print ("digraph structs {          \n"
                "rankdir   =  TB;           \n"
@@ -491,8 +474,7 @@ void make_list_graph (List *Lst)
          dot_print ("cell%d: <prv%d> -> cell%d: <prv%d>;\n", i + 1, i + 1, i, i);
     }
 
-    dot_print ("cell%d: <nxt%d> -> cell0: <nul>;\n"
-               "cell0: <nul> -> cell1: <nxt1>;  \n", id_fill, id_fill);
+    dot_print ("cell0: <nul> -> cell1: <nxt1>;  \n");
 
     if(id - id_fill - 1 > 0) dot_print ("cell0: <frn0> -> cell%d: <frn%d>;\n", id_fill + 1, id_fill + 1);
 
@@ -514,6 +496,33 @@ void make_list_graph (List *Lst)
 
     system    (dot_name);
     dbg_print (img_name);
+}
+
+//-----------------------------------------------------------------------------
+
+int verificate_list (List *Lst)
+{
+    handle_errors (Lst);
+
+    if(Lst->Data == NULL)                     Lst->Info.error_codes |= ERR_MEMDATA;
+    if(Lst->size > Lst->capacity)             Lst->Info.error_codes |= ERR_OVERF;
+    if(Lst->capacity < 0)                     Lst->Info.error_codes |= ERR_CAP;
+    if(Lst->size < 0)                         Lst->Info.error_codes |= ERR_SIZE;
+    if(Lst->Info.dbg_file == NULL)            Lst->Info.error_codes |= ERR_DBGFILE;
+    if((Lst->head == 0 && Lst->tail != 0) ||
+       (Lst->head != 0 && Lst->tail == 0)   ) Lst->Info.error_codes |= ERR_HT_VALUE;
+    if(Lst->head < 0  || Lst->tail < 0)       Lst->Info.error_codes |= ERR_BZ_VALUE;
+    if((int) Lst->Data[0].value != 0 ||
+       (int) Lst->Data[0].prev  != 0   )      Lst->Info.error_codes |= ERR_NUL_ELEM;
+
+    if (Lst->Info.error_codes != 0)
+    {
+        Lst->Info.cur_status = "ERROR";
+
+        return ERROR_LST;
+    }
+
+    return 0;
 }
 
 //-----------------------------------------------------------------------------
