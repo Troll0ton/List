@@ -25,9 +25,10 @@
 
 enum Nums
 {
-    POISON     = 0xDEBEBA,
-    NUM_OF_MIS = 12,
-    QUOTES     = 34,
+    POISON          = 0xDEBEBA,
+    NUM_OF_MIS      = 12,
+    QUOTES          = 34,
+    MAX_FL_NAME_LEN = 150,
 };
 
 //-----------------------------------------------------------------------------
@@ -59,6 +60,7 @@ typedef struct List_info
     FILE       *dot_file;
     int         error_codes;
     char       *cur_status;
+    int         graph_num;
 } List_info;
 
 //-----------------------------------------------------------------------------

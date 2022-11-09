@@ -21,6 +21,13 @@ int main ()
 
     list_push_tail (&Lst, 400);
     list_push_tail (&Lst, 500);
+    list_push_tail (&Lst, 500);
+    list_push_tail (&Lst, 700);
+    list_push_tail (&Lst, 500);
+    list_push_tail (&Lst, 400);
+    list_push_tail (&Lst, 200);
+    list_push_tail (&Lst, 400);
+    list_push_tail (&Lst, 500);
     list_push_right (&Lst, 600, 5);
 
     list_pop (&Lst, 5);
@@ -29,12 +36,6 @@ int main ()
     list_push_head (&Lst, 656);
 
     debug_list (&Lst);
-
-    rewrite_lst_lgc (&Lst);
-
-    debug_list (&Lst);
-
-    make_list_graph (&Lst);
 
     list_dtor (&Lst);
 

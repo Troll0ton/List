@@ -17,15 +17,18 @@
 
 #define list_ctor(Lst, capacity) list_ctor_ (Lst, capacity, #Lst, __FILE__,  __LINE__)
 
-#define dot_print(...) list_ctor_ (Lst, __VA_ARGS__)
+#define dot_print(...) fprintf (Lst->Info.dot_file, __VA_ARGS__)
+
+#define dbg_print(...) fprintf (Lst->Info.dbg_file, __VA_ARGS__)
 
 //-----------------------------------------------------------------------------
 
 enum Nums
 {
-    POISON     = 0xDEBEBA,
-    NUM_OF_MIS = 12,
-    QUOTES     = 34,
+    POISON          = 0xDEBEBA,
+    NUM_OF_MIS      = 12,
+    QUOTES          = 34,
+    MAX_FL_NAME_LEN = 150,
 };
 
 //-----------------------------------------------------------------------------
@@ -96,7 +99,7 @@ enum ERROR_CODES
     ERR_PUSH     = (1 << 11),
     ERR_POP      = (1 << 12),
     ERR_GET_POS  = (1 << 12),
-    
+
     ERROR_LST    = 0xBADBED,
 };
 
