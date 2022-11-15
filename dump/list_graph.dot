@@ -1,45 +1,64 @@
-digraph structs {          
-rankdir   =  TB;           
-cell0 [style = filled , color = black, fillcolor = paleturquoise1, shape=record,label=" { <nul> id: 0 | NULL | <frn0> FREE: 11 | NULL } " ];
-cell1 [style = filled, color = black, fillcolor = lightsalmon, shape=record,label=" { id: 1 | value:   656 |<nxt1> next:     2 | <prv1> prev:     0} " ];
-cell2 [style = filled, color = black, fillcolor = lightsalmon, shape=record,label=" { id: 2 | value:   100 |<nxt2> next:     3 | <prv2> prev:     1} " ];
-cell3 [style = filled, color = black, fillcolor = lightsalmon, shape=record,label=" { id: 3 | value:   200 |<nxt3> next:     4 | <prv3> prev:     2} " ];
-cell4 [style = filled, color = black, fillcolor = lightsalmon, shape=record,label=" { id: 4 | value:   500 |<nxt4> next:     5 | <prv4> prev:     3} " ];
-cell5 [style = filled, color = black, fillcolor = lightsalmon, shape=record,label=" { id: 5 | value:   700 |<nxt5> next:     6 | <prv5> prev:     4} " ];
-cell6 [style = filled, color = black, fillcolor = lightsalmon, shape=record,label=" { id: 6 | value:   500 |<nxt6> next:     7 | <prv6> prev:     5} " ];
-cell7 [style = filled, color = black, fillcolor = lightsalmon, shape=record,label=" { id: 7 | value:   400 |<nxt7> next:     8 | <prv7> prev:     6} " ];
-cell8 [style = filled, color = black, fillcolor = lightsalmon, shape=record,label=" { id: 8 | value:   200 |<nxt8> next:     9 | <prv8> prev:     7} " ];
-cell9 [style = filled, color = black, fillcolor = lightsalmon, shape=record,label=" { id: 9 | value:   400 |<nxt9> next:    10 | <prv9> prev:     8} " ];
-cell10 [style = filled, color = black, fillcolor = lightsalmon, shape=record,label=" { id: 10 | value:   500 |<nxt10> next:     0 | <prv10> prev:     9} " ];
-  cell11 [style = filled , color = black, fillcolor = palegreen1, shape=record,label=" { id: 11 | value: FREE | <frn11> next:    12 | prev: FREE } " ];
-  cell12 [style = filled , color = black, fillcolor = palegreen1, shape=record,label=" { id: 12 | value: FREE | <frn12> next:    13 | prev: FREE } " ];
-  cell13 [style = filled , color = black, fillcolor = palegreen1, shape=record,label=" { id: 13 | value: FREE | <frn13> next:    14 | prev: FREE } " ];
-  cell14 [style = filled , color = black, fillcolor = palegreen1, shape=record,label=" { id: 14 | value: FREE | <frn14> next:    15 | prev: FREE } " ];
-  cell15 [style = filled , color = black, fillcolor = palegreen1, shape=record,label=" { id: 15 | value: FREE | <frn15> next:     0 | prev: FREE } " ];
-{ rank = same; cell0; cell1; cell2; cell3; cell4; cell5; cell6; cell7; cell8; cell9; cell10; cell11; cell12; cell13; cell14; cell15; }
+digraph structs {                                                                  
+rankdir = TB;                                                                      
+cell0 [style = filled, color = black, fillcolor = paleturquoise1,                  
+shape=record,label = " { <nul> id: 0 | NULL | <frn> FREE: 11 | <prv> NULL } " ]; 
+cell1 [style = filled, color = black, fillcolor = lightsalmon, shape=record,label = " { <idk> id: 1 | value:                   656 |<nxt> next:     2 | <prv> prev:     0} " ];
+cell2 [style = filled, color = black, fillcolor = lightsalmon, shape=record,label = " { <idk> id: 2 | value:                   100 |<nxt> next:     3 | <prv> prev:     1} " ];
+cell3 [style = filled, color = black, fillcolor = lightsalmon, shape=record,label = " { <idk> id: 3 | value:                   200 |<nxt> next:     4 | <prv> prev:     2} " ];
+cell4 [style = filled, color = black, fillcolor = lightsalmon, shape=record,label = " { <idk> id: 4 | value:                   500 |<nxt> next:     5 | <prv> prev:     3} " ];
+cell5 [style = filled, color = black, fillcolor = lightsalmon, shape=record,label = " { <idk> id: 5 | value:                   700 |<nxt> next:     6 | <prv> prev:     4} " ];
+cell6 [style = filled, color = black, fillcolor = lightsalmon, shape=record,label = " { <idk> id: 6 | value:                   500 |<nxt> next:     7 | <prv> prev:     5} " ];
+cell7 [style = filled, color = black, fillcolor = lightsalmon, shape=record,label = " { <idk> id: 7 | value:                   400 |<nxt> next:     8 | <prv> prev:     6} " ];
+cell8 [style = filled, color = black, fillcolor = lightsalmon, shape=record,label = " { <idk> id: 8 | value:                   200 |<nxt> next:     9 | <prv> prev:     7} " ];
+cell9 [style = filled, color = black, fillcolor = lightsalmon, shape=record,label = " { <idk> id: 9 | value:                   400 |<nxt> next:    10 | <prv> prev:     8} " ];
+cell10 [style = filled, color = black, fillcolor = lightsalmon, shape=record,label = " { <idk> id: 10 | value:                   500 |<nxt> next:     0 | <prv> prev:     9} " ];
+  cell11 [style = filled , color = black, fillcolor = palegreen1,  shape=record,label = " { <idk> id: 11 | value: FREE           | <frn> next:    12 | <prv> prev: FREE } " ];
+  cell12 [style = filled , color = black, fillcolor = palegreen1,  shape=record,label = " { <idk> id: 12 | value: FREE           | <frn> next:    13 | <prv> prev: FREE } " ];
+  cell13 [style = filled , color = black, fillcolor = palegreen1,  shape=record,label = " { <idk> id: 13 | value: FREE           | <frn> next:    14 | <prv> prev: FREE } " ];
+  cell14 [style = filled , color = black, fillcolor = palegreen1,  shape=record,label = " { <idk> id: 14 | value: FREE           | <frn> next:    15 | <prv> prev: FREE } " ];
+  cell15 [style = filled , color = black, fillcolor = palegreen1,  shape=record,label = " { <idk> id: 15 | value: FREE           | <frn> next:     0 | <prv> prev: FREE } " ];
+cell0 -> cell1 [weight = 5, style = invis];
+cell1 -> cell2 [weight = 5, style = invis];
+cell2 -> cell3 [weight = 5, style = invis];
+cell3 -> cell4 [weight = 5, style = invis];
+cell4 -> cell5 [weight = 5, style = invis];
+cell5 -> cell6 [weight = 5, style = invis];
+cell6 -> cell7 [weight = 5, style = invis];
+cell7 -> cell8 [weight = 5, style = invis];
+cell8 -> cell9 [weight = 5, style = invis];
+cell9 -> cell10 [weight = 5, style = invis];
+cell10 -> cell11 [weight = 5, style = invis];
+cell11 -> cell12 [weight = 5, style = invis];
+cell12 -> cell13 [weight = 5, style = invis];
+cell13 -> cell14 [weight = 5, style = invis];
+cell14 -> cell15 [weight = 5, style = invis];
+
+splines = ortho
+{ rank = same;   cell0; cell1; cell2; cell3; cell4; cell5; cell6; cell7; cell8; cell9; cell10; cell11; cell12; cell13; cell14; cell15; }
  edge[constraint = false]
-cell1: <nxt1> -> cell2: <nxt2>;
-cell2: <prv2> -> cell1: <prv1>;
-cell2: <nxt2> -> cell3: <nxt3>;
-cell3: <prv3> -> cell2: <prv2>;
-cell3: <nxt3> -> cell4: <nxt4>;
-cell4: <prv4> -> cell3: <prv3>;
-cell4: <nxt4> -> cell5: <nxt5>;
-cell5: <prv5> -> cell4: <prv4>;
-cell5: <nxt5> -> cell6: <nxt6>;
-cell6: <prv6> -> cell5: <prv5>;
-cell6: <nxt6> -> cell7: <nxt7>;
-cell7: <prv7> -> cell6: <prv6>;
-cell7: <nxt7> -> cell8: <nxt8>;
-cell8: <prv8> -> cell7: <prv7>;
-cell8: <nxt8> -> cell9: <nxt9>;
-cell9: <prv9> -> cell8: <prv8>;
-cell9: <nxt9> -> cell10: <nxt10>;
-cell10: <prv10> -> cell9: <prv9>;
-cell0: <nul> -> cell1: <nxt1>;  
-cell0: <frn0> -> cell11: <frn11>;
-cell11: <frn11> -> cell12: <frn12>;
-cell12: <frn12> -> cell13: <frn13>;
-cell13: <frn13> -> cell14: <frn14>;
-cell14: <frn14> -> cell15: <frn15>;
+cell1: <nxt> -> cell2: <nxt> [weight = 5];
+cell2: <prv> -> cell1: <prv> [weight = 5];
+cell2: <nxt> -> cell3: <nxt> [weight = 5];
+cell3: <prv> -> cell2: <prv> [weight = 5];
+cell3: <nxt> -> cell4: <nxt> [weight = 5];
+cell4: <prv> -> cell3: <prv> [weight = 5];
+cell4: <nxt> -> cell5: <nxt> [weight = 5];
+cell5: <prv> -> cell4: <prv> [weight = 5];
+cell5: <nxt> -> cell6: <nxt> [weight = 5];
+cell6: <prv> -> cell5: <prv> [weight = 5];
+cell6: <nxt> -> cell7: <nxt> [weight = 5];
+cell7: <prv> -> cell6: <prv> [weight = 5];
+cell7: <nxt> -> cell8: <nxt> [weight = 5];
+cell8: <prv> -> cell7: <prv> [weight = 5];
+cell8: <nxt> -> cell9: <nxt> [weight = 5];
+cell9: <prv> -> cell8: <prv> [weight = 5];
+cell9: <nxt> -> cell10: <nxt> [weight = 5];
+cell10: <prv> -> cell9: <prv> [weight = 5];
+cell0:  <nul> -> cell1: <idk> [weight = 5];  
+cell15: <prv> -> cell0: <prv> [weight = 5];  
+cell0: <frn> -> cell11: <frn> [weight = 5];
+cell11: <frn> -> cell12: <frn> [weight = 5];
+cell12: <frn> -> cell13: <frn> [weight = 5];
+cell13: <frn> -> cell14: <frn> [weight = 5];
+cell14: <frn> -> cell15: <frn> [weight = 5];
 }

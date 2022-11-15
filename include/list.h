@@ -15,6 +15,28 @@
 
 //-----------------------------------------------------------------------------
 
+#define DELETED_PAR -1
+#define LST_INCREASE 1
+#define LST_DECREASE 0
+
+#define QUOTES 34
+
+//-----------------------------------------------------------------------------
+
+#define E(suffix) ERROR_##suffix
+
+#define N(suffix) NUM_OF_##suffix
+
+#define L(suffix) LIMIT_##suffix
+
+#define P(suffix) POISON_##suffix
+
+//-----------------------------------------------------------------------------
+
+#define DATA(i) Lst->Data[i]
+
+//-----------------------------------------------------------------------------
+
 #define list_ctor(Lst, capacity) list_ctor_ (Lst, capacity, #Lst, __FILE__,  __LINE__)
 
 #define dot_print(...) fprintf (Lst->Info.dot_file, __VA_ARGS__)
@@ -23,21 +45,16 @@
 
 //-----------------------------------------------------------------------------
 
-enum Nums
+enum LIST_INFO
 {
-    POISON          = 0xDEBEBA,
-    NUM_OF_MIS      = 12,
-    QUOTES          = 34,
-    MAX_FL_NAME_LEN = 150,
+    L(FILE_NAME_LEN) = 150,
 };
 
 //-----------------------------------------------------------------------------
 
-enum Pars
+enum POISONS
 {
-    LST_INCREASE = 1,
-    LST_DECREASE = 0,
-    DELETED_PAR  = -1,
+    P(FREE_CELL) = 0xDEBEBA,
 };
 
 //-----------------------------------------------------------------------------
@@ -85,42 +102,46 @@ typedef struct Error_info
 
 //-----------------------------------------------------------------------------
 
-enum ERROR_CODES
+enum LIST_ERROR_CODES
 {
-    ERR_MEMDATA  = (1 << 1),
-    ERR_OVERF    = (1 << 2),
-    ERR_CAP      = (1 << 3),
-    ERR_SIZE     = (1 << 4),
-    ERR_DBGFILE  = (1 << 5),
-    ERR_DOTFILE  = (1 << 6),
-    ERR_NUL_ELEM = (1 << 7),
-    ERR_RESIZE   = (1 << 8),
-    ERR_HT_VALUE = (1 << 9),
-    ERR_BZ_VALUE = (1 << 10),
-    ERR_PUSH     = (1 << 11),
-    ERR_POP      = (1 << 12),
-    ERR_GET_POS  = (1 << 12),
+    E(MEM_DATA)   = (1 << 1),
+    E(OVERFLOW)   = (1 << 2),
+    E(CAPACITY)   = (1 << 3),
+    E(SIZE)       = (1 << 4),
+    E(DBG_FILE)   = (1 << 5),
+    E(DOT_FILE)   = (1 << 6),
+    E(NULL_ELEM)  = (1 << 7),
+    E(RESIZE)     = (1 << 8),
+    E(DATA_VALUE) = (1 << 9),
+    E(PUSH)       = (1 << 11),
+    E(POP)        = (1 << 12),
+    E(GET_POS)    = (1 << 12),
+    E(FATAL)      = 0xBADBED,
+};
 
-    ERROR_LST    = 0xBADBED,
+//-----------------------------------------------------------------------------
+
+enum LIST_ERROR_CODES_INFO
+{
+    N(MISTAKES) = 12,
 };
 
 //-----------------------------------------------------------------------------
 
 const Error_info error_arr[]
 {
-    {ERR_MEMDATA,  "ERROR - null pointer to data                  \n"},
-    {ERR_OVERF,    "ERROR - list overflow                         \n"},
-    {ERR_CAP,      "ERROR - incorrect capacity value (below zero) \n"},
-    {ERR_SIZE,     "ERROR - incorrect size value (below zero)     \n"},
-    {ERR_DBGFILE,  "ERROR - incorrect dbg FILE pointer            \n"},
-    {ERR_DOTFILE,  "ERROR - incorrect dot FILE pointer            \n"},
-    {ERR_NUL_ELEM, "ERROR - nul elem error                        \n"},
-    {ERR_RESIZE,   "ERROR - wrong resize parameter                \n"},
-    {ERR_HT_VALUE, "ERROR - wrong data values                     \n"},
-    {ERR_BZ_VALUE, "ERROR - head or tail below zero               \n"},
-    {ERR_PUSH,     "ERROR - push in incorrect position            \n"},
-    {ERR_POP,      "ERROR - pop - incorrect position              \n"},
-    {ERR_GET_POS,  "ERROR - get_logc_position - incorrect position\n"},
+    {E(MEM_DATA),   "ERROR - null pointer to data                  \n"},
+    {E(OVERFLOW),   "ERROR - list overflow                         \n"},
+    {E(CAPACITY),   "ERROR - incorrect capacity value (below zero) \n"},
+    {E(SIZE),       "ERROR - incorrect size value (below zero)     \n"},
+    {E(DBG_FILE),   "ERROR - incorrect dbg FILE pointer            \n"},
+    {E(DOT_FILE),   "ERROR - incorrect dot FILE pointer            \n"},
+    {E(NULL_ELEM),  "ERROR - nul elem error                        \n"},
+    {E(RESIZE),     "ERROR - wrong resize parameter                \n"},
+    {E(DATA_VALUE), "ERROR - wrong data values                     \n"},
+    {E(PUSH),       "ERROR - push in incorrect position            \n"},
+    {E(POP),        "ERROR - pop - incorrect position              \n"},
+    {E(GET_POS),    "ERROR - get_logc_position - incorrect position\n"},
 };
 
 //-----------------------------------------------------------------------------
@@ -143,7 +164,7 @@ void  list_info_dtor  (List *Lst);
 
 int   get_logic_pos   (List* Lst, int logic_pos);
 
-void  rewrite_lst_lgc (List* Lst);
+void  list_linerize   (List* Lst);
 
 int   list_ctor_      (List       *Lst,       int capacity_ctor, const char* lst_name,
                        const char* file_name, int lst_line                            );

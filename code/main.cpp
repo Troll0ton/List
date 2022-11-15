@@ -6,7 +6,7 @@ int main ()
 {
     List Lst = { 0 };
 
-    if(list_ctor (&Lst, 15) == ERROR_LST)
+    if(list_ctor (&Lst, 15) == E(FATAL))
     {
         printf ("ERROR - CTOR\n");
 
@@ -21,11 +21,13 @@ int main ()
 
     list_push_tail (&Lst, 400);
     list_push_tail (&Lst, 500);
+    debug_list (&Lst);
     list_push_tail (&Lst, 500);
     list_push_tail (&Lst, 700);
     list_push_tail (&Lst, 500);
     list_push_tail (&Lst, 400);
     list_push_tail (&Lst, 200);
+    debug_list (&Lst);
     list_push_tail (&Lst, 400);
     list_push_tail (&Lst, 500);
     list_push_right (&Lst, 600, 5);

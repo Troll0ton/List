@@ -20,7 +20,7 @@ int list_ctor_ (List       *Lst,       int capacity_ctor, const char* lst_name,
         {
             for(int curr_pos = 1; curr_pos < Lst->capacity; curr_pos++)
             {
-                Lst->Data[curr_pos].value = POISON;
+                Lst->Data[curr_pos].value = P(FREE_CELL);
             }
         }
     }
@@ -52,8 +52,7 @@ void handle_errors (List *Lst)
 {
     if(Lst->Info.error_codes != 0)
     {
-        // N(ERROR)
-        for(int i = 0; i < NUM_OF_MIS; i++)
+        for(int i = 0; i < N(MISTAKES); i++)
         {
             if(Lst->Info.error_codes & error_arr[i].error_code)
             {
@@ -71,7 +70,7 @@ void free_space_ctor (List *Lst)
 
     for(int curr_pos = 1; curr_pos < Lst->capacity; curr_pos++)
     {
-        if((int) Lst->Data[curr_pos].value == POISON)
+        if((int) Lst->Data[curr_pos].value == P(FREE_CELL))
         {
             Lst->Data[curr_pos].next = 0;
             Lst->Data[curr_pos].prev = DELETED_PAR;
@@ -127,7 +126,7 @@ void list_resize (List *Lst, int opt_resize)
 
     else
     {
-        Lst->Info.error_codes |= ERR_RESIZE;
+        Lst->Info.error_codes |= E(RESIZE);
     }
 
     Lst->Data = (Node*) recalloc (Lst->Data, Lst->capacity, Lst->size, sizeof (Node));
@@ -137,14 +136,11 @@ void list_resize (List *Lst, int opt_resize)
     verificate_list (Lst);
 }
 
-//-----------------------------------------------------------------------------
-
-#define DATA(i) Lst->Data[i]
-// ...
+//----------------------------------------------------------------------------
 
 int init_node (List *Lst)
 {
-    if(Lst->Data[0].next == 0 || ++(Lst->size) > Lst->capacity)
+    if(DATA(0).next == 0 || ++(Lst->size) > Lst->capacity)
     {
         list_resize (Lst, LST_INCREASE);
     }
@@ -218,9 +214,9 @@ void list_push_right (List *Lst, double value, int insert_pos)
 {
     if(insert_pos < 1                        ||
        insert_pos > Lst->tail                ||
-       (int) Lst->Data[insert_pos].value == POISON  )
+       (int) Lst->Data[insert_pos].value == P(FREE_CELL)  )
     {
-        Lst->Info.error_codes |= ERR_PUSH;
+        Lst->Info.error_codes |= E(PUSH);
     }
 
     else
@@ -251,7 +247,7 @@ int get_logic_pos (List* Lst, int logic_pos)
 {
     if(logic_pos < 1)
     {
-        Lst->Info.error_codes |= ERR_GET_POS;
+        Lst->Info.error_codes |= E(GET_POS);
     }
 
     int physc_pos = Lst->head;
@@ -262,7 +258,7 @@ int get_logic_pos (List* Lst, int logic_pos)
 
         if(physc_pos == 0)
         {
-            Lst->Info.error_codes |= ERR_GET_POS;
+            Lst->Info.error_codes |= E(GET_POS);
 
             break;
         }
@@ -274,9 +270,8 @@ int get_logic_pos (List* Lst, int logic_pos)
 }
 
 //-----------------------------------------------------------------------------
-// list_linerize
 
-void rewrite_lst_lgc (List* Lst)
+void list_linerize (List* Lst)
 {
     List Lst_auxl = { 0 };
 
@@ -299,7 +294,7 @@ void rewrite_lst_lgc (List* Lst)
 
     for(int i = Lst->size; i < Lst->capacity - 1; i++)
     {
-        Lst_auxl.Data[i].value = POISON;
+        Lst_auxl.Data[i].value = P(FREE_CELL);
         Lst_auxl.Data[i].next  = i + 1;
         Lst_auxl.Data[i].prev  = DELETED_PAR;
     }
@@ -327,9 +322,9 @@ void list_pop (List *Lst, int del_pos)
 {
     if(del_pos > Lst->size ||
        del_pos < 1         ||
-       (int) Lst->Data[del_pos].value == POISON)
+       (int) Lst->Data[del_pos].value == P(FREE_CELL))
     {
-        Lst->Info.error_codes |= ERR_POP;
+        Lst->Info.error_codes |= E(POP);
     }
 
     else if(Lst->head == Lst->tail && Lst->head == del_pos)
@@ -356,7 +351,7 @@ void list_pop (List *Lst, int del_pos)
         Lst->Data[Lst->Data[del_pos].next].prev = Lst->Data[del_pos].prev;
     }
 
-    Lst->Data[del_pos].value = POISON;
+    Lst->Data[del_pos].value = P(FREE_CELL);
     Lst->Data[del_pos].next  = Lst->Data[0].next;
     Lst->Data[del_pos].prev  = DELETED_PAR;
     Lst->Data[0].next        = del_pos;
@@ -376,7 +371,7 @@ void list_pop (List *Lst, int del_pos)
 
 void debug_list (List *Lst)
 {
-    rewrite_lst_lgc (Lst);
+    list_linerize (Lst);
 
     dbg_print ("<pre>\n"
                "_________________________LIST__________________________________\n\n"
@@ -406,31 +401,31 @@ void make_list_graph (List *Lst)
 
     Lst->Info.dot_file = fopen ("../dump/list_graph.dot", "w+");
 
-    if(Lst->Info.dot_file == NULL) Lst->Info.error_codes |= ERR_DOTFILE;
+    if(Lst->Info.dot_file == NULL) Lst->Info.error_codes |= E(DOT_FILE);
 
     verificate_list (Lst);
 
-    dot_print ("digraph structs {          \n"
-               "rankdir   =  TB;           \n"
-               "cell0 [style = filled , color = black, fillcolor = paleturquoise1, "
-               "shape=record,label=%c { <nul> id: 0 | NULL | <frn0> FREE: %d | NULL } %c ];\n",
-               QUOTES, Lst->Data[0].next, QUOTES);
+    dot_print ("digraph structs {                                                                  \n"
+               "rankdir = TB;                                                                      \n"
+               "cell0 [style = filled, color = black, fillcolor = paleturquoise1,                  \n"
+               "shape=record,label = \" { <nul> id: 0 | NULL | <frn> FREE: %d | <prv> NULL } \" ]; \n",
+               Lst->Data[0].next);
 
     while(1)
     {
         dot_print ("cell%d [style = filled, color = black, fillcolor = lightsalmon, "
-                   "shape=record,label=%c { id: %d | value: ",
-                   id, QUOTES, id);
+                   "shape=record,label = \" { <idk> id: %d | value:                 ",
+                   id, id);
 
-        if((int) Lst->Data[curr_pos].value == POISON) dot_print ("_NAN_ ");
-        else                                          dot_print ("%5lg ", Lst->Data[curr_pos].value);
+        if((int) Lst->Data[curr_pos].value == P(FREE_CELL)) dot_print ("_NAN_ ");
+        else                                                dot_print ("%5lg ", Lst->Data[curr_pos].value);
 
-        dot_print ("|<nxt%d> next: %5d | <prv%d> prev: ", id, Lst->Data[curr_pos].next, id);
+        dot_print ("|<nxt> next: %5d | <prv> prev: ", Lst->Data[curr_pos].next);
 
         if((int) Lst->Data[curr_pos].prev == DELETED_PAR) dot_print ("_____");
         else                                              dot_print ("%5d", Lst->Data[curr_pos].prev);
 
-        dot_print ("} %c ];\n", QUOTES);
+        dot_print ("} \" ];\n");
 
         if((int) Lst->Data[curr_pos].next == 0) break;
 
@@ -446,11 +441,11 @@ void make_list_graph (List *Lst)
 
     while(1)
     {
-        dot_print ("  cell%d [style = filled , color = black, fillcolor = palegreen1, "
-                   "shape=record,label=%c { id: %d | value: FREE ",
-                   id, QUOTES, id);
+        dot_print ("  cell%d [style = filled , color = black, fillcolor = palegreen1,"
+                   "  shape=record,label = \" { <idk> id: %d | value: FREE           ",
+                   id, id);
 
-        dot_print ("| <frn%d> next: %5d | prev: FREE } %c ];\n", id, Lst->Data[curr_pos].next, QUOTES);
+        dot_print ("| <frn> next: %5d | <prv> prev: FREE } \" ];\n", Lst->Data[curr_pos].next);
 
         if((int) Lst->Data[curr_pos].next == 0) break;
 
@@ -459,7 +454,13 @@ void make_list_graph (List *Lst)
         id++;
     }
 
-    dot_print ("{ rank = same; ");
+    for(int i = 0; i < id; i++)
+    {
+        dot_print ("cell%d -> cell%d [weight = 5, style = invis];\n", i, i + 1);
+    }
+
+    dot_print ("\nsplines = ortho\n");
+    dot_print ("{ rank = same;   ");
 
     for(int i = 0; i <= id; i++)
     {
@@ -470,27 +471,28 @@ void make_list_graph (List *Lst)
 
     for(int i = 1; i < id_fill; i++)
     {
-         dot_print ("cell%d: <nxt%d> -> cell%d: <nxt%d>;\n", i, i, i + 1, i + 1);
-         dot_print ("cell%d: <prv%d> -> cell%d: <prv%d>;\n", i + 1, i + 1, i, i);
+         dot_print ("cell%d: <nxt> -> cell%d: <nxt> [weight = 5];\n", i,     i + 1);
+         dot_print ("cell%d: <prv> -> cell%d: <prv> [weight = 5];\n", i + 1, i    );
     }
 
-    dot_print ("cell0: <nul> -> cell1: <nxt1>;  \n");
+    dot_print ("cell0:  <nul> -> cell1: <idk> [weight = 5];  \n");
+    dot_print ("cell%d: <prv> -> cell0: <prv> [weight = 5];  \n", id);
 
-    if(id - id_fill - 1 > 0) dot_print ("cell0: <frn0> -> cell%d: <frn%d>;\n", id_fill + 1, id_fill + 1);
+    if(id - id_fill - 1 > 0) dot_print ("cell0: <frn> -> cell%d: <frn> [weight = 5];\n", id_fill + 1);
 
     for(int i = id_fill + 1; i < id; i++)
     {
-         dot_print ("cell%d: <frn%d> -> cell%d: <frn%d>;\n", i, i, i + 1, i + 1);
+         dot_print ("cell%d: <frn> -> cell%d: <frn> [weight = 5];\n", i, i + 1);
     }
 
     dot_print ("}\n");
 
     fclose (Lst->Info.dot_file);
 
-    char img_name[MAX_FL_NAME_LEN] = "";
-    char dot_name[MAX_FL_NAME_LEN] = "";
+    char img_name[L(FILE_NAME_LEN)] = "";
+    char dot_name[L(FILE_NAME_LEN)] = "";
 
-    sprintf (img_name, "<img width=\"1400px\" src=\"../dump/graph%d.png\"> \n",   Lst->Info.graph_num);
+    sprintf (img_name, "<img width=\"1400px\" src=\"../dump/graph%d.png\">   \n", Lst->Info.graph_num);
     sprintf (dot_name, "dot -Tpng ../dump/list_graph.dot -o ../dump/graph%d.png", Lst->Info.graph_num);
     Lst->Info.graph_num++;
 
@@ -504,22 +506,49 @@ int verificate_list (List *Lst)
 {
     handle_errors (Lst);
 
-    if(Lst->Data == NULL)                     Lst->Info.error_codes |= ERR_MEMDATA;
-    if(Lst->size > Lst->capacity)             Lst->Info.error_codes |= ERR_OVERF;
-    if(Lst->capacity < 0)                     Lst->Info.error_codes |= ERR_CAP;
-    if(Lst->size < 0)                         Lst->Info.error_codes |= ERR_SIZE;
-    if(Lst->Info.dbg_file == NULL)            Lst->Info.error_codes |= ERR_DBGFILE;
+    if(Lst->Data == NULL)
+    {
+        Lst->Info.error_codes |= E(MEM_DATA);
+    }
+
+    if(Lst->size > Lst->capacity)
+    {
+        Lst->Info.error_codes |= E(OVERFLOW);
+    }
+
+    if(Lst->capacity < 0)
+    {
+        Lst->Info.error_codes |= E(CAPACITY);
+    }
+
+    if(Lst->size < 0)
+    {
+        Lst->Info.error_codes |= E(SIZE);
+    }
+
+    if(Lst->Info.dbg_file == NULL)
+    {
+        Lst->Info.error_codes |= E(DBG_FILE);
+    }
+
     if((Lst->head == 0 && Lst->tail != 0) ||
-       (Lst->head != 0 && Lst->tail == 0)   ) Lst->Info.error_codes |= ERR_HT_VALUE;
-    if(Lst->head < 0  || Lst->tail < 0)       Lst->Info.error_codes |= ERR_BZ_VALUE;
+       (Lst->head != 0 && Lst->tail == 0) ||
+        Lst->head < 0  || Lst->tail < 0     )
+    {
+        Lst->Info.error_codes |= E(DATA_VALUE);
+    }
+
     if((int) Lst->Data[0].value != 0 ||
-       (int) Lst->Data[0].prev  != 0   )      Lst->Info.error_codes |= ERR_NUL_ELEM;
+       (int) Lst->Data[0].prev  != 0   )
+    {
+        Lst->Info.error_codes |= E(NULL_ELEM);
+    }
 
     if (Lst->Info.error_codes != 0)
     {
         Lst->Info.cur_status = "ERROR";
 
-        return ERROR_LST;
+        return E(FATAL);
     }
 
     return 0;
