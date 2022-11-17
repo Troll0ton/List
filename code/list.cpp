@@ -407,6 +407,9 @@ void make_list_graph (List *Lst)
 
     dot_print ("digraph structs {                                                                  \n"
                "rankdir = TB;                                                                      \n"
+               "graph [dpi = 100];                                                                 \n"
+               "ranksep = 1.5;                                                                     \n"
+               "edge[penwidth = 10];                                                               \n"
                "cell0 [style = filled, color = black, fillcolor = paleturquoise1,                  \n"
                "shape=record,label = \" { <nul> id: 0 | NULL | <frn> FREE: %d | <prv> NULL } \" ]; \n",
                Lst->Data[0].next);
@@ -437,6 +440,8 @@ void make_list_graph (List *Lst)
     int id_fill = id;
     id++;
 
+    dot_print ("cell%d: <idk> -> cell0: <nul> [weight = 5];\n", id - 1);
+
     curr_pos = Lst->Data[0].next;
 
     while(1)
@@ -460,14 +465,14 @@ void make_list_graph (List *Lst)
     }
 
     dot_print ("\nsplines = ortho\n");
-    dot_print ("{ rank = same;   ");
+    dot_print ("{rank = same;   ");
 
     for(int i = 0; i <= id; i++)
     {
          dot_print ("cell%d; ", i);
     }
 
-    dot_print ("}\n edge[constraint = false]\n");
+    dot_print ("}\n \n");
 
     for(int i = 1; i < id_fill; i++)
     {
@@ -476,9 +481,11 @@ void make_list_graph (List *Lst)
     }
 
     dot_print ("cell0:  <nul> -> cell1: <idk> [weight = 5];  \n");
-    dot_print ("cell%d: <prv> -> cell0: <prv> [weight = 5];  \n", id);
+    dot_print ("cell%d: <idk> -> cell0: <nul> [weight = 5];  \n", id);
+    dot_print ("cell1:  <prv> -> cell0: <prv> [weight = 5];  \n");
 
-    if(id - id_fill - 1 > 0) dot_print ("cell0: <frn> -> cell%d: <frn> [weight = 5];\n", id_fill + 1);
+
+    if(id - id_fill - 1 > 0) dot_print ("cell0: <nul> -> cell%d: <idk> [weight = 5];\n", id_fill + 1);
 
     for(int i = id_fill + 1; i < id; i++)
     {

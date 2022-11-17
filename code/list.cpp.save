@@ -398,17 +398,20 @@ void make_list_graph (List *Lst)
 {
     int curr_pos = Lst->head;
     int id       = 1;
-
+    /*
     Lst->Info.dot_file = fopen ("../dump/list_graph.dot", "w+");
 
     if(Lst->Info.dot_file == NULL) Lst->Info.error_codes |= E(DOT_FILE);
 
     verificate_list (Lst);
 
-    dot_print ("digraph structs {                                                             \n"
-               "rankdir = TB;                                                                 \n"
-               "cell0 [style = filled, color = black, fillcolor = paleturquoise1,               "
-               "shape=record,label = \" { <nul> id: 0 | NULL | <frn0> FREE: %d | NULL } \" ]; \n",
+    dot_print ("digraph structs {                                                                  \n"
+               "rankdir = TB;                                                                      \n"
+               "graph [dpi = 100];                                                                 \n"
+               "ranksep = 1.5;                                                                     \n"
+               "edge[penwidth = 10];                                                               \n"
+               "cell0 [style = filled, color = black, fillcolor = paleturquoise1,                  \n"
+               "shape=record,label = \" { <nul> id: 0 | NULL | <frn> FREE: %d | <prv> NULL } \" ]; \n",
                Lst->Data[0].next);
 
     while(1)
@@ -437,6 +440,8 @@ void make_list_graph (List *Lst)
     int id_fill = id;
     id++;
 
+    dot_print ("cell%d: <idk> -> cell0: <nul> [weight = 5];\n", id - 1);
+
     curr_pos = Lst->Data[0].next;
 
     while(1)
@@ -445,7 +450,7 @@ void make_list_graph (List *Lst)
                    "  shape=record,label = \" { <idk> id: %d | value: FREE           ",
                    id, id);
 
-        dot_print ("| <frn> next: %5d | prev: FREE } %c ];\n", Lst->Data[curr_pos].next, QUOTES);
+        dot_print ("| <frn> next: %5d | <prv> prev: FREE } \" ];\n", Lst->Data[curr_pos].next);
 
         if((int) Lst->Data[curr_pos].next == 0) break;
 
@@ -454,28 +459,37 @@ void make_list_graph (List *Lst)
         id++;
     }
 
-    dot_print ("{ rank = same; ");
+    for(int i = 0; i < id; i++)
+    {
+        dot_print ("cell%d -> cell%d [weight = 5, style = invis];\n", i, i + 1);
+    }
+
+    dot_print ("\nsplines = ortho\n");
+    dot_print ("{rank = same;   ");
 
     for(int i = 0; i <= id; i++)
     {
          dot_print ("cell%d; ", i);
     }
 
-    dot_print ("}\n edge[constraint = false]\n");
+    dot_print ("}\n \n");
 
     for(int i = 1; i < id_fill; i++)
     {
-         dot_print ("cell%d: <nxt%d> -> cell%d: <nxt%d>;\n", i,     i,     i + 1, i + 1);
-         dot_print ("cell%d: <prv%d> -> cell%d: <prv%d>;\n", i + 1, i + 1, i,     i    );
+         dot_print ("cell%d: <nxt> -> cell%d: <nxt> [weight = 5];\n", i,     i + 1);
+         dot_print ("cell%d: <prv> -> cell%d: <prv> [weight = 5];\n", i + 1, i    );
     }
 
-    dot_print ("cell0: <nul> -> cell1: <idk>;  \n");
+    dot_print ("cell0:  <nul> -> cell1: <idk> [weight = 5];  \n");
+    dot_print ("cell%d: <idk> -> cell0: <nul> [weight = 5];  \n", id);
+    dot_print ("cell1:  <prv> -> cell0: <prv> [weight = 5];  \n");
 
-    if(id - id_fill - 1 > 0) dot_print ("cell0: <frn0> -> cell%d: <frn%d>;\n", id_fill + 1, id_fill + 1);
+
+    if(id - id_fill - 1 > 0) dot_print ("cell0: <nul> -> cell%d: <idk> [weight = 5];\n", id_fill + 1);
 
     for(int i = id_fill + 1; i < id; i++)
     {
-         dot_print ("cell%d: <frn%d> -> cell%d: <frn%d>;\n", i, i, i + 1, i + 1);
+         dot_print ("cell%d: <frn> -> cell%d: <frn> [weight = 5];\n", i, i + 1);
     }
 
     dot_print ("}\n");
