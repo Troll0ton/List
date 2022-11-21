@@ -147,8 +147,6 @@ int init_node (List *Lst)
 
     int curr_pos = Lst->Data[0].next;
 
-    // free <=> Data[0].next
-
     Lst->Data[0].next = Lst->Data[Lst->Data[0].next].next;
 
     Lst->Data[curr_pos].value = 0;
@@ -398,7 +396,7 @@ void make_list_graph (List *Lst)
 {
     int curr_pos = Lst->head;
     int id       = 1;
-    /*
+
     Lst->Info.dot_file = fopen ("../dump/list_graph.dot", "w+");
 
     if(Lst->Info.dot_file == NULL) Lst->Info.error_codes |= E(DOT_FILE);

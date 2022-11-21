@@ -147,8 +147,6 @@ int init_node (List *Lst)
 
     int curr_pos = Lst->Data[0].next;
 
-    // free <=> Data[0].next
-
     Lst->Data[0].next = Lst->Data[Lst->Data[0].next].next;
 
     Lst->Data[curr_pos].value = 0;
@@ -440,8 +438,6 @@ void make_list_graph (List *Lst)
     int id_fill = id;
     id++;
 
-    dot_print ("cell%d: <idk> -> cell0: <nul> [weight = 5];\n", id - 1);
-
     curr_pos = Lst->Data[0].next;
 
     while(1)
@@ -464,8 +460,8 @@ void make_list_graph (List *Lst)
         dot_print ("cell%d -> cell%d [weight = 5, style = invis];\n", i, i + 1);
     }
 
-    dot_print ("\nsplines = ortho\n");
-    dot_print ("{rank = same;   ");
+    dot_print ("\nsplines = ortho\n"
+               "{rank = same;      ");
 
     for(int i = 0; i <= id; i++)
     {
@@ -480,9 +476,8 @@ void make_list_graph (List *Lst)
          dot_print ("cell%d: <prv> -> cell%d: <prv> [weight = 5];\n", i + 1, i    );
     }
 
-    dot_print ("cell0:  <nul> -> cell1: <idk> [weight = 5];  \n");
-    dot_print ("cell%d: <idk> -> cell0: <nul> [weight = 5];  \n", id);
-    dot_print ("cell1:  <prv> -> cell0: <prv> [weight = 5];  \n");
+    dot_print ("cell0:  <nul> -> cell1: <idk> [weight = 5];  \n"
+               "cell1:  <prv> -> cell0: <prv> [weight = 5];  \n");
 
 
     if(id - id_fill - 1 > 0) dot_print ("cell0: <nul> -> cell%d: <idk> [weight = 5];\n", id_fill + 1);

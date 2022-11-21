@@ -15,7 +15,6 @@ cell7 [style = filled, color = black, fillcolor = lightsalmon, shape=record,labe
 cell8 [style = filled, color = black, fillcolor = lightsalmon, shape=record,label = " { <idk> id: 8 | value:                   200 |<nxt> next:     9 | <prv> prev:     7} " ];
 cell9 [style = filled, color = black, fillcolor = lightsalmon, shape=record,label = " { <idk> id: 9 | value:                   400 |<nxt> next:    10 | <prv> prev:     8} " ];
 cell10 [style = filled, color = black, fillcolor = lightsalmon, shape=record,label = " { <idk> id: 10 | value:                   500 |<nxt> next:     0 | <prv> prev:     9} " ];
-cell10: <idk> -> cell0: <nul> [weight = 5];
   cell11 [style = filled , color = black, fillcolor = palegreen1,  shape=record,label = " { <idk> id: 11 | value: FREE           | <frn> next:    12 | <prv> prev: FREE } " ];
   cell12 [style = filled , color = black, fillcolor = palegreen1,  shape=record,label = " { <idk> id: 12 | value: FREE           | <frn> next:    13 | <prv> prev: FREE } " ];
   cell13 [style = filled , color = black, fillcolor = palegreen1,  shape=record,label = " { <idk> id: 13 | value: FREE           | <frn> next:    14 | <prv> prev: FREE } " ];
@@ -38,7 +37,7 @@ cell13 -> cell14 [weight = 5, style = invis];
 cell14 -> cell15 [weight = 5, style = invis];
 
 splines = ortho
-{rank = same;   cell0; cell1; cell2; cell3; cell4; cell5; cell6; cell7; cell8; cell9; cell10; cell11; cell12; cell13; cell14; cell15; }
+{rank = same;      cell0; cell1; cell2; cell3; cell4; cell5; cell6; cell7; cell8; cell9; cell10; cell11; cell12; cell13; cell14; cell15; }
  
 cell1: <nxt> -> cell2: <nxt> [weight = 5];
 cell2: <prv> -> cell1: <prv> [weight = 5];
@@ -59,7 +58,6 @@ cell9: <prv> -> cell8: <prv> [weight = 5];
 cell9: <nxt> -> cell10: <nxt> [weight = 5];
 cell10: <prv> -> cell9: <prv> [weight = 5];
 cell0:  <nul> -> cell1: <idk> [weight = 5];  
-cell15: <idk> -> cell0: <nul> [weight = 5];  
 cell1:  <prv> -> cell0: <prv> [weight = 5];  
 cell0: <nul> -> cell11: <idk> [weight = 5];
 cell11: <frn> -> cell12: <frn> [weight = 5];
