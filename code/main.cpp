@@ -21,13 +21,17 @@ int main ()
 
     list_push_tail (&Lst, 400);
     list_push_tail (&Lst, 500);
+
     debug_list (&Lst);
+
     list_push_tail (&Lst, 500);
     list_push_tail (&Lst, 700);
     list_push_tail (&Lst, 500);
     list_push_tail (&Lst, 400);
     list_push_tail (&Lst, 200);
+
     debug_list (&Lst);
+
     list_push_tail (&Lst, 400);
     list_push_tail (&Lst, 500);
     list_push_right (&Lst, 600, 5);

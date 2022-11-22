@@ -34,6 +34,7 @@
 //-----------------------------------------------------------------------------
 
 #define DATA(i) Lst->Data[i]
+#define DATA_AUX(i) Lst_auxl.Data[i]
 
 //-----------------------------------------------------------------------------
 
@@ -164,7 +165,7 @@ void  list_info_dtor  (List *Lst);
 
 int   get_logic_pos   (List* Lst, int logic_pos);
 
-void  list_linerize   (List* Lst);
+void  list_linearize   (List* Lst);
 
 int   list_ctor_      (List       *Lst,       int capacity_ctor, const char* lst_name,
                        const char* file_name, int lst_line                            );

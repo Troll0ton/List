@@ -20,7 +20,7 @@ int list_ctor_ (List       *Lst,       int capacity_ctor, const char* lst_name,
         {
             for(int curr_pos = 1; curr_pos < Lst->capacity; curr_pos++)
             {
-                Lst->Data[curr_pos].value = P(FREE_CELL);
+                DATA(curr_pos).value = P(FREE_CELL);
             }
         }
     }
@@ -70,11 +70,11 @@ void free_space_ctor (List *Lst)
 
     for(int curr_pos = 1; curr_pos < Lst->capacity; curr_pos++)
     {
-        if((int) Lst->Data[curr_pos].value == P(FREE_CELL))
+        if((int) DATA(curr_pos).value == P(FREE_CELL))
         {
-            Lst->Data[curr_pos].next = 0;
-            Lst->Data[curr_pos].prev = DELETED_PAR;
-            prev_free = Lst->Data[prev_free].next = curr_pos;
+            DATA(curr_pos).next = 0;
+            DATA(curr_pos).prev = DELETED_PAR;
+            prev_free = DATA(prev_free).next = curr_pos;
         }
     }
 
@@ -145,13 +145,13 @@ int init_node (List *Lst)
         list_resize (Lst, LST_INCREASE);
     }
 
-    int curr_pos = Lst->Data[0].next;
+    int curr_pos = DATA(0).next;
 
-    Lst->Data[0].next = Lst->Data[Lst->Data[0].next].next;
+    DATA(0).next = DATA(DATA(0).next).next;
 
-    Lst->Data[curr_pos].value = 0;
-    Lst->Data[curr_pos].next  = 0;
-    Lst->Data[curr_pos].prev  = 0;
+    DATA(curr_pos).value = 0;
+    DATA(curr_pos).next  = 0;
+    DATA(curr_pos).prev  = 0;
 
     return curr_pos;
 
@@ -164,7 +164,7 @@ void list_push_head (List *Lst, double value)
 {
     int curr_pos = init_node (Lst);
 
-    Lst->Data[curr_pos].value = value;
+    DATA(curr_pos).value = value;
 
     if(Lst->tail == 0)
     {
@@ -173,8 +173,8 @@ void list_push_head (List *Lst, double value)
 
     else
     {
-        Lst->Data[Lst->head].prev = curr_pos;
-        Lst->Data[curr_pos].next  = Lst->head;
+        DATA(Lst->head).prev = curr_pos;
+        DATA(curr_pos).next  = Lst->head;
     }
 
     Lst->head = curr_pos;
@@ -188,7 +188,7 @@ void list_push_tail (List *Lst, double value)
 {
     int curr_pos = init_node (Lst);
 
-    Lst->Data[curr_pos].value = value;
+    DATA(curr_pos).value = value;
 
     if(Lst->head == 0)
     {
@@ -197,8 +197,8 @@ void list_push_tail (List *Lst, double value)
 
     else
     {
-        Lst->Data[Lst->tail].next = curr_pos;
-        Lst->Data[curr_pos].prev  = Lst->tail;
+        DATA(Lst->tail).next = curr_pos;
+        DATA(curr_pos).prev  = Lst->tail;
     }
 
     Lst->tail = curr_pos;
@@ -210,9 +210,9 @@ void list_push_tail (List *Lst, double value)
 
 void list_push_right (List *Lst, double value, int insert_pos)
 {
-    if(insert_pos < 1                        ||
-       insert_pos > Lst->tail                ||
-       (int) Lst->Data[insert_pos].value == P(FREE_CELL)  )
+    if(insert_pos < 1                              ||
+       insert_pos > Lst->tail                      ||
+       (int) DATA(insert_pos).value == P(FREE_CELL)  )
     {
         Lst->Info.error_codes |= E(PUSH);
     }
@@ -228,11 +228,11 @@ void list_push_right (List *Lst, double value, int insert_pos)
         {
             int curr_pos = init_node (Lst);
 
-            Lst->Data[curr_pos].value                  = value;
-            Lst->Data[curr_pos].prev                   = insert_pos;
-            Lst->Data[curr_pos].next                   = Lst->Data[insert_pos].next;
-            Lst->Data[Lst->Data[insert_pos].next].prev = curr_pos;
-            Lst->Data[insert_pos].next                 = curr_pos;
+            DATA(curr_pos).value             = value;
+            DATA(curr_pos).prev              = insert_pos;
+            DATA(curr_pos).next              = DATA(insert_pos).next;
+            DATA(DATA(insert_pos).next).prev = curr_pos;
+            DATA(insert_pos).next            = curr_pos;
         }
     }
 
@@ -252,7 +252,7 @@ int get_logic_pos (List* Lst, int logic_pos)
 
     for(int i = 0; i < logic_pos - 1; i++)
     {
-        physc_pos = Lst->Data[physc_pos].next;
+        physc_pos = DATA(physc_pos).next;
 
         if(physc_pos == 0)
         {
@@ -269,7 +269,7 @@ int get_logic_pos (List* Lst, int logic_pos)
 
 //-----------------------------------------------------------------------------
 
-void list_linerize (List* Lst)
+void list_linearize (List* Lst)
 {
     List Lst_auxl = { 0 };
 
@@ -279,35 +279,35 @@ void list_linerize (List* Lst)
 
     for(int i = 1; i < Lst->size - 1; i++)
     {
-        Lst_auxl.Data[i]      = Lst->Data[curr_pos];
-        Lst_auxl.Data[i].prev = i - 1;
-        Lst_auxl.Data[i].next = i + 1;
+        DATA_AUX(i)      = DATA(curr_pos);
+        DATA_AUX(i).prev = i - 1;
+        DATA_AUX(i).next = i + 1;
 
-        curr_pos = Lst->Data[curr_pos].next;
+        curr_pos = DATA(curr_pos).next;
     }
 
-    Lst_auxl.Data[Lst->size - 1].value = Lst->Data[Lst->tail].value;
-    Lst_auxl.Data[Lst->size - 1].next  = 0;
-    Lst_auxl.Data[Lst->size - 1].prev  = Lst->size - 2;
+    DATA_AUX(Lst->size - 1).value = DATA(Lst->tail).value;
+    DATA_AUX(Lst->size - 1).next  = 0;
+    DATA_AUX(Lst->size - 1).prev  = Lst->size - 2;
 
     for(int i = Lst->size; i < Lst->capacity - 1; i++)
     {
-        Lst_auxl.Data[i].value = P(FREE_CELL);
-        Lst_auxl.Data[i].next  = i + 1;
-        Lst_auxl.Data[i].prev  = DELETED_PAR;
+        DATA_AUX(i).value = P(FREE_CELL);
+        DATA_AUX(i).next  = i + 1;
+        DATA_AUX(i).prev  = DELETED_PAR;
     }
 
-    Lst_auxl.Data[Lst->capacity - 1].next = 0;
-    Lst_auxl.Data[Lst->capacity - 1].prev = DELETED_PAR;
+    DATA_AUX(Lst->capacity - 1).next = 0;
+    DATA_AUX(Lst->capacity - 1).prev = DELETED_PAR;
 
     for(int i = 1; i < Lst->capacity; i++)
     {
-        Lst->Data[i] = Lst_auxl.Data[i];
+        DATA(i) = DATA_AUX(i);
     }
 
     list_dtor (&Lst_auxl);
 
-    Lst->Data[0].next = Lst->size;
+    DATA(0).next = Lst->size;
     Lst->head         = 1;
     Lst->tail         = Lst->size - 1;
 
@@ -320,7 +320,7 @@ void list_pop (List *Lst, int del_pos)
 {
     if(del_pos > Lst->size ||
        del_pos < 1         ||
-       (int) Lst->Data[del_pos].value == P(FREE_CELL))
+       (int) DATA(del_pos).value == P(FREE_CELL))
     {
         Lst->Info.error_codes |= E(POP);
     }
@@ -333,26 +333,26 @@ void list_pop (List *Lst, int del_pos)
 
     else if(del_pos == Lst->head)
     {
-        Lst->Data[Lst->Data[Lst->head].next].prev = 0;
-        Lst->head = Lst->Data[Lst->head].next;
+        DATA(DATA(Lst->head).next).prev = 0;
+        Lst->head = DATA(Lst->head).next;
     }
 
     else if(del_pos == Lst->tail)
     {
-        Lst->Data[Lst->Data[Lst->tail].prev].next = 0;
-        Lst->tail = Lst->Data[Lst->tail].prev;
+        DATA(DATA(Lst->tail).prev).next = 0;
+        Lst->tail = DATA(Lst->tail).prev;
     }
 
     else
     {
-        Lst->Data[Lst->Data[del_pos].prev].next = Lst->Data[del_pos].next;
-        Lst->Data[Lst->Data[del_pos].next].prev = Lst->Data[del_pos].prev;
+        DATA(DATA(del_pos).prev).next = DATA(del_pos).next;
+        DATA(DATA(del_pos).next).prev = DATA(del_pos).prev;
     }
 
-    Lst->Data[del_pos].value = P(FREE_CELL);
-    Lst->Data[del_pos].next  = Lst->Data[0].next;
-    Lst->Data[del_pos].prev  = DELETED_PAR;
-    Lst->Data[0].next        = del_pos;
+    DATA(del_pos).value = P(FREE_CELL);
+    DATA(del_pos).next  = DATA(0).next;
+    DATA(del_pos).prev  = DELETED_PAR;
+    DATA(0).next        = del_pos;
     Lst->size--;
 
     verificate_list (Lst);
@@ -369,7 +369,7 @@ void list_pop (List *Lst, int del_pos)
 
 void debug_list (List *Lst)
 {
-    list_linerize (Lst);
+    list_linearize (Lst);
 
     dbg_print ("<pre>\n"
                "_________________________LIST__________________________________\n\n"
@@ -383,7 +383,7 @@ void debug_list (List *Lst)
                Lst->Info.name + 1,    Lst,
                Lst->Info.cur_status, (Lst->Info).file,
                Lst->Info.line,
-               Lst->head, Lst->tail, Lst->Data[0].next, Lst->size, Lst->capacity);
+               Lst->head, Lst->tail, DATA(0).next, Lst->size, Lst->capacity);
 
     make_list_graph (Lst);
 
@@ -410,7 +410,7 @@ void make_list_graph (List *Lst)
                "edge[penwidth = 10];                                                               \n"
                "cell0 [style = filled, color = black, fillcolor = paleturquoise1,                  \n"
                "shape=record,label = \" { <nul> id: 0 | NULL | <frn> FREE: %d | <prv> NULL } \" ]; \n",
-               Lst->Data[0].next);
+               DATA(0).next);
 
     while(1)
     {
@@ -418,19 +418,19 @@ void make_list_graph (List *Lst)
                    "shape=record,label = \" { <idk> id: %d | value:                 ",
                    id, id);
 
-        if((int) Lst->Data[curr_pos].value == P(FREE_CELL)) dot_print ("_NAN_ ");
-        else                                                dot_print ("%5lg ", Lst->Data[curr_pos].value);
+        if((int) DATA(curr_pos).value == P(FREE_CELL)) dot_print ("_NAN_ ");
+        else                                           dot_print ("%5lg ", DATA(curr_pos).value);
 
-        dot_print ("|<nxt> next: %5d | <prv> prev: ", Lst->Data[curr_pos].next);
+        dot_print ("|<nxt> next: %5d | <prv> prev: ", DATA(curr_pos).next);
 
-        if((int) Lst->Data[curr_pos].prev == DELETED_PAR) dot_print ("_____");
-        else                                              dot_print ("%5d", Lst->Data[curr_pos].prev);
+        if((int) DATA(curr_pos).prev == DELETED_PAR) dot_print ("_____");
+        else                                         dot_print ("%5d", DATA(curr_pos).prev);
 
         dot_print ("} \" ];\n");
 
-        if((int) Lst->Data[curr_pos].next == 0) break;
+        if((int) DATA(curr_pos).next == 0) break;
 
-        curr_pos = Lst->Data[curr_pos].next;
+        curr_pos = DATA(curr_pos).next;
 
         id++;
     }
@@ -438,7 +438,7 @@ void make_list_graph (List *Lst)
     int id_fill = id;
     id++;
 
-    curr_pos = Lst->Data[0].next;
+    curr_pos = DATA(0).next;
 
     while(1)
     {
@@ -446,11 +446,11 @@ void make_list_graph (List *Lst)
                    "  shape=record,label = \" { <idk> id: %d | value: FREE           ",
                    id, id);
 
-        dot_print ("| <frn> next: %5d | <prv> prev: FREE } \" ];\n", Lst->Data[curr_pos].next);
+        dot_print ("| <frn> next: %5d | <prv> prev: FREE } \" ];\n", DATA(curr_pos).next);
 
-        if((int) Lst->Data[curr_pos].next == 0) break;
+        if((int) DATA(curr_pos).next == 0) break;
 
-        curr_pos = Lst->Data[curr_pos].next;
+        curr_pos = DATA(curr_pos).next;
 
         id++;
     }
@@ -540,8 +540,8 @@ int verificate_list (List *Lst)
         Lst->Info.error_codes |= E(DATA_VALUE);
     }
 
-    if((int) Lst->Data[0].value != 0 ||
-       (int) Lst->Data[0].prev  != 0   )
+    if((int) DATA(0).value != 0 ||
+       (int) DATA(0).prev  != 0   )
     {
         Lst->Info.error_codes |= E(NULL_ELEM);
     }
