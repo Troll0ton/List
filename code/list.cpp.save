@@ -2,6 +2,9 @@
 
 //-----------------------------------------------------------------------------
 
+// capacity
+// log_file
+
 int list_ctor_ (List       *Lst,       int capacity_ctor, const char* lst_name,
                 const char* file_name, int lst_line                            )
 {
@@ -20,6 +23,8 @@ int list_ctor_ (List       *Lst,       int capacity_ctor, const char* lst_name,
         {
             for(int curr_pos = 1; curr_pos < Lst->capacity; curr_pos++)
             {
+                // ??
+                // SIZEOV_RAX
                 DATA(curr_pos).value = P(FREE_CELL);
             }
         }
@@ -269,7 +274,7 @@ int get_logic_pos (List* Lst, int logic_pos)
 
 //-----------------------------------------------------------------------------
 
-void list_linerize (List* Lst)
+void list_linearize (List* Lst)
 {
     List Lst_auxl = { 0 };
 
@@ -279,30 +284,30 @@ void list_linerize (List* Lst)
 
     for(int i = 1; i < Lst->size - 1; i++)
     {
-        Lst_auxl.Data[i]      = DATA(curr_pos);
-        Lst_auxl.Data[i].prev = i - 1;
-        Lst_auxl.Data[i].next = i + 1;
+        DATA_AUX(i)      = DATA(curr_pos);
+        DATA_AUX(i).prev = i - 1;
+        DATA_AUX(i).next = i + 1;
 
         curr_pos = DATA(curr_pos).next;
     }
 
-    Lst_auxl.Data[Lst->size - 1].value = DATA(Lst->tail).value;
-    Lst_auxl.Data[Lst->size - 1].next  = 0;
-    Lst_auxl.Data[Lst->size - 1].prev  = Lst->size - 2;
+    DATA_AUX(Lst->size - 1).value = DATA(Lst->tail).value;
+    DATA_AUX(Lst->size - 1).next  = 0;
+    DATA_AUX(Lst->size - 1).prev  = Lst->size - 2;
 
     for(int i = Lst->size; i < Lst->capacity - 1; i++)
     {
-        Lst_auxl.Data[i].value = P(FREE_CELL);
-        Lst_auxl.Data[i].next  = i + 1;
-        Lst_auxl.Data[i].prev  = DELETED_PAR;
+        DATA_AUX(i).value = P(FREE_CELL);
+        DATA_AUX(i).next  = i + 1;
+        DATA_AUX(i).prev  = DELETED_PAR;
     }
 
-    Lst_auxl.Data[Lst->capacity - 1].next = 0;
-    Lst_auxl.Data[Lst->capacity - 1].prev = DELETED_PAR;
+    DATA_AUX(Lst->capacity - 1).next = 0;
+    DATA_AUX(Lst->capacity - 1).prev = DELETED_PAR;
 
     for(int i = 1; i < Lst->capacity; i++)
     {
-        DATA(i) = Lst_auxl.Data[i];
+        DATA(i) = DATA_AUX(i);
     }
 
     list_dtor (&Lst_auxl);
@@ -369,7 +374,7 @@ void list_pop (List *Lst, int del_pos)
 
 void debug_list (List *Lst)
 {
-    list_linerize (Lst);
+    list_linearize (Lst);
 
     dbg_print ("<pre>\n"
                "_________________________LIST__________________________________\n\n"

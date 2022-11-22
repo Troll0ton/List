@@ -2,6 +2,9 @@
 
 //-----------------------------------------------------------------------------
 
+// capacity
+// log_file
+
 int list_ctor_ (List       *Lst,       int capacity_ctor, const char* lst_name,
                 const char* file_name, int lst_line                            )
 {
@@ -20,6 +23,8 @@ int list_ctor_ (List       *Lst,       int capacity_ctor, const char* lst_name,
         {
             for(int curr_pos = 1; curr_pos < Lst->capacity; curr_pos++)
             {
+                // ??
+                //
                 DATA(curr_pos).value = P(FREE_CELL);
             }
         }
@@ -159,6 +164,7 @@ int init_node (List *Lst)
 }
 
 //-----------------------------------------------------------------------------
+// push_front
 
 void list_push_head (List *Lst, double value)
 {
@@ -183,6 +189,7 @@ void list_push_head (List *Lst, double value)
 }
 
 //-----------------------------------------------------------------------------
+// push_back
 
 void list_push_tail (List *Lst, double value)
 {
@@ -207,6 +214,8 @@ void list_push_tail (List *Lst, double value)
 }
 
 //-----------------------------------------------------------------------------
+
+// push_after
 
 void list_push_right (List *Lst, double value, int insert_pos)
 {
@@ -248,6 +257,7 @@ int get_logic_pos (List* Lst, int logic_pos)
         Lst->Info.error_codes |= E(GET_POS);
     }
 
+// phys_pos
     int physc_pos = Lst->head;
 
     for(int i = 0; i < logic_pos - 1; i++)
@@ -279,12 +289,15 @@ void list_linearize (List* Lst)
 
     for(int i = 1; i < Lst->size - 1; i++)
     {
+        // NEW_DATA
         DATA_AUX(i)      = DATA(curr_pos);
         DATA_AUX(i).prev = i - 1;
         DATA_AUX(i).next = i + 1;
 
         curr_pos = DATA(curr_pos).next;
     }
+
+    // Last element
 
     DATA_AUX(Lst->size - 1).value = DATA(Lst->tail).value;
     DATA_AUX(Lst->size - 1).next  = 0;
@@ -308,8 +321,8 @@ void list_linearize (List* Lst)
     list_dtor (&Lst_auxl);
 
     DATA(0).next = Lst->size;
-    Lst->head         = 1;
-    Lst->tail         = Lst->size - 1;
+    Lst->head    = 1;
+    Lst->tail    = Lst->size - 1;
 
     verificate_list (Lst);
 }
@@ -366,6 +379,7 @@ void list_pop (List *Lst, int del_pos)
 }
 
 //-----------------------------------------------------------------------------
+// list_dump
 
 void debug_list (List *Lst)
 {
@@ -396,6 +410,8 @@ void make_list_graph (List *Lst)
 {
     int curr_pos = Lst->head;
     int id       = 1;
+    // curr_elem
+    // free_elem_start
 
     Lst->Info.dot_file = fopen ("../dump/list_graph.dot", "w+");
 
